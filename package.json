@@ -7,6 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "typeorm:generate": "npm run build && npx typeorm migration:generate -d dist/data-source.js",
+    "typeorm:run": "npm run build && npx typeorm migration:run -d dist/data-source.js",
+    "typeorm:revert": "npm run build && npx typeorm migration:revert -d dist/data-source.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
