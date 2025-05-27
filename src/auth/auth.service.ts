@@ -35,6 +35,8 @@ export class AuthService {
       expiresIn: '7d',
     });
 
+    await this.usersService.updateRefreshToken(user.id, refresh_token);
+
     return {
       access_token,
       refresh_token,

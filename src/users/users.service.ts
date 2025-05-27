@@ -54,4 +54,13 @@ export class UsersService {
     await this.usersRepository.delete(id);
     return { message: 'User deleted successfully' };
   }
+
+  async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    await this.usersRepository.update(userId, { refreshToken });
+  }
+
+  async findById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
+  }
+
 }
