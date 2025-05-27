@@ -60,8 +60,6 @@ async updateRefreshToken(userId: number, refreshToken: string | null): Promise<v
   if (!user) throw new Error('User not found');
   user.refreshToken = refreshToken;
   await this.usersRepository.save(user);
-
-    console.log(`Refresh token atualizado para usuário ${userId}:`, refreshToken);
 }
 
   async findById(id: number): Promise<User | null> {
