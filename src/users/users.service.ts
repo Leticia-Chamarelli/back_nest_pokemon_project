@@ -55,7 +55,7 @@ export class UsersService {
     return { message: 'User deleted successfully' };
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
+  async updateRefreshToken(userId: number, refreshToken: string | undefined): Promise<void> {
     await this.usersRepository.update(userId, { refreshToken });
   }
 

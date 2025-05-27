@@ -59,4 +59,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
+
+  async logout(userId: number): Promise<void> {
+    await this.usersService.updateRefreshToken(userId, undefined);
+  }
+
 }
