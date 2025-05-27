@@ -24,44 +24,56 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+async login(user: any) {
+  const payload = { username: user.username, sub: user.id };
 
-    const access_token = this.jwtService.sign(payload, {
-      expiresIn: '15m',
+  const access_token = this.jwtService.sign(payload, {
+    expiresIn: '15m',
+  });
+
+  const refresh_token = this.jwtService.sign(payload, {
+    expiresIn: '7d',
+  });
+
+  const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
+
+  await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
+
+  return {
+    access_token,
+    refresh_token,
+  };
+}
+
+async refreshToken(refresh_token: string) {
+  try {
+    const payload = this.jwtService.verify(refresh_token, {
+      secret: process.env.JWT_SECRET,
     });
 
-    const refresh_token = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-    });
-
-    await this.usersService.updateRefreshToken(user.id, refresh_token);
-
-    return {
-      access_token,
-      refresh_token,
-    };
-  }
-
-  async refreshToken(refresh_token: string) {
-    try {
-      const payload = this.jwtService.verify(refresh_token, {
-        secret: process.env.JWT_SECRET,
-      });
-
-      const newAccessToken = this.jwtService.sign(
-        { username: payload.username, sub: payload.sub },
-        { expiresIn: '15m' },
-      );
-
-      return { access_token: newAccessToken };
-    } catch (err) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+    const user = await this.usersService.findOne(payload.sub);
+    if (!user || !user.refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
     }
+
+    const tokenMatches = await bcrypt.compare(refresh_token, user.refreshToken);
+    if (!tokenMatches) {
+      throw new UnauthorizedException('Refresh token does not match');
+    }
+
+    const newAccessToken = this.jwtService.sign(
+      { username: payload.username, sub: payload.sub },
+      { expiresIn: '15m' },
+    );
+
+    return { access_token: newAccessToken };
+  } catch (err) {
+    throw new UnauthorizedException('Invalid or expired refresh token');
   }
+}
 
   async logout(userId: number): Promise<void> {
-    await this.usersService.updateRefreshToken(userId, undefined);
+    await this.usersService.updateRefreshToken(userId, null);
   }
 
 }

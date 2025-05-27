@@ -55,9 +55,12 @@ export class UsersService {
     return { message: 'User deleted successfully' };
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string | undefined): Promise<void> {
-    await this.usersRepository.update(userId, { refreshToken });
-  }
+async updateRefreshToken(userId: number, refreshToken: string | null): Promise<void> {
+  const user = await this.usersRepository.findOne({ where: { id: userId } });
+  if (!user) throw new Error('User not found');
+  user.refreshToken = refreshToken;
+  await this.usersRepository.save(user);
+}
 
   async findById(id: number): Promise<User | null> {
     return this.usersRepository.findOne({ where: { id } });
