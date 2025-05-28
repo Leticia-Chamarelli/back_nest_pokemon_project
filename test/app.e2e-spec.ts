@@ -65,4 +65,24 @@ describe('Auth (e2e)', () => {
 
     expect(response.body).toHaveProperty('message');
   });
+
+    it('should refresh token with valid refresh_token', async () => {
+    const loginResponse = await request(server)
+      .post('/auth/login')
+      .send({
+        username: 'testuser2',
+        password: '123456',
+      })
+      .expect(201);
+
+    const refreshToken = loginResponse.body.refresh_token;
+
+    const refreshResponse = await request(server)
+      .post('/auth/refresh')
+      .send({ refresh_token: refreshToken })
+      .expect(201);
+
+    expect(refreshResponse.body).toHaveProperty('access_token');
+    expect(refreshResponse.body).toHaveProperty('refresh_token');
+  });
 });
