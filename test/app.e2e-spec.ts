@@ -33,4 +33,17 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('access_token');
     expect(response.body).toHaveProperty('refresh_token');
   });
+
+    it('should not login with invalid credentials', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'wronguser',
+        password: 'wrongpassword',
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('message');
+  });
+
 });
