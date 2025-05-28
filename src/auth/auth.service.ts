@@ -13,11 +13,11 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
     if (!user) {
-      return null; 
+      return null;
     }
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
-      return null; 
+      return null;
     }
 
     const { password: pwd, ...result } = user;
@@ -38,7 +38,6 @@ export class AuthService {
     });
 
     const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
-
     await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
 
     return {
@@ -63,12 +62,25 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token does not match');
       }
 
-      const newAccessToken = this.jwtService.sign(
-        { username: payload.username, sub: payload.sub },
-        { expiresIn: '15m', secret: process.env.JWT_SECRET },
-      );
+      const newPayload = { username: payload.username, sub: payload.sub };
 
-      return { access_token: newAccessToken };
+      const newAccessToken = this.jwtService.sign(newPayload, {
+        expiresIn: '15m',
+        secret: process.env.JWT_SECRET,
+      });
+
+      const newRefreshToken = this.jwtService.sign(newPayload, {
+        expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+
+      const hashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);
+      await this.usersService.updateRefreshToken(payload.sub, hashedRefreshToken);
+
+      return {
+        access_token: newAccessToken,
+        refresh_token: newRefreshToken,
+      };
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
