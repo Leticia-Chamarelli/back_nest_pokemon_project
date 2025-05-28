@@ -6,6 +6,7 @@ import { AppModule } from './../src/app.module';
 describe('Auth (e2e)', () => {
   let app: INestApplication;
   let server: any;
+  let accessToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,10 +33,12 @@ describe('Auth (e2e)', () => {
 
     expect(response.body).toHaveProperty('access_token');
     expect(response.body).toHaveProperty('refresh_token');
+
+    accessToken = response.body.access_token; // salvar token para usar depois
   });
 
-    it('should not login with invalid credentials', async () => {
-    const response = await request(app.getHttpServer())
+  it('should not login with invalid credentials', async () => {
+    const response = await request(server)
       .post('/auth/login')
       .send({
         username: 'wronguser',
@@ -46,4 +49,20 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('message');
   });
 
+  it('should access protected route with valid token', async () => {
+    const response = await request(server)
+      .get('/auth/profile') // corrigido
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(response.body.user).toHaveProperty('username', 'testuser2'); // corrigido: `.user.username`
+  });
+
+  it('should fail to access protected route without token', async () => {
+    const response = await request(server)
+      .get('/auth/profile') // corrigido
+      .expect(401);
+
+    expect(response.body).toHaveProperty('message');
+  });
 });
