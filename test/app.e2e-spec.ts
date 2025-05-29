@@ -145,4 +145,16 @@ describe('Auth (e2e)', () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty('message');
   });
+
+    it('should fail to access protected route with an invalid access token', async () => {
+    const fakeToken = 'Bearer faketoken.invalid.signature';
+
+    const response = await request(server)
+      .get('/auth/profile')
+      .set('Authorization', fakeToken);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('message');
+  });
+
 });
