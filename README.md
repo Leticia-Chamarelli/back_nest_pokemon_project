@@ -124,22 +124,56 @@ Descrições úteis
 ✅ Nenhum segredo commitado
 
 🏛️ Arquitetura
-src/
+📁 src
 │
-├── auth/
+├── 📁 auth
 │   ├── auth.controller.ts
+│   ├── auth.controller.spec.ts
+│   ├── auth.module.ts
 │   ├── auth.service.ts
-│   ├── dto/
-│   ├── strategies/
-│   ├── guards/
+│   ├── auth.service.spec.ts
+│   ├── 📁 dto
+│   │   ├── login.dto.ts
+│   │   └── refresh.dto.ts
+│   ├── 📁 strategies
+│   │   └── jwt.strategy.ts
 │
-├── user/
-├── common/
-│   ├── guards/
-│   └── interfaces/
-├── config/
-├── main.ts
-└── app.module.ts
+├── 📁 common
+│   ├── 📁 filters
+│   │   └── http-exception.filter.ts
+│   ├── 📁 guards
+│   │   └── jwt-auth.guard.ts
+│   └── 📁 interfaces
+│       └── request-with-user.interface.ts
+│
+├── 📁 migrations
+│   └── [timestamp]-AddRefreshTokenToUser.ts
+│
+├── 📁 users
+│   ├── user.entity.ts
+│   ├── users.controller.ts
+│   ├── users.controller.spec.ts
+│   ├── users.service.ts
+│   ├── users.service.spec.ts
+│   └── users.module.ts
+│
+├── app.controller.ts
+├── app.controller.spec.ts
+├── app.service.ts
+├── app.module.ts
+└── main.ts
+
+📁 test
+├── app.e2e-spec.ts
+└── jest-e2e.json
+
+📄 .env.example
+📄 .gitignore
+📄 README.md
+📄 package.json
+📄 tsconfig.json
+📄 nest-cli.json
+
 
 🔐 Estratégia de autenticação:
 JWT (Access token curto)
