@@ -1,98 +1,159 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🔐 NestJS Auth API with JWT & Refresh Token
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/), utilizando tokens JWT e refresh tokens com revogação real, escrita com foco em segurança, testes e boas práticas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📚 Sumário
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [📦 Tecnologias](#-tecnologias)
+- [🚀 Como rodar localmente](#-como-rodar-localmente)
+- [⚙️ Variáveis de ambiente](#️-variáveis-de-ambiente)
+- [📜 Scripts disponíveis](#-scripts-disponíveis)
+- [🧪 Testes e2e](#-testes-e2e)
+- [🔁 Fluxo de autenticação](#-fluxo-de-autenticação)
+- [📬 Testes via Postman](#-testes-via-postman)
+- [🧾 Documentação Swagger](#-documentação-swagger)
+- [🛡️ Checklist de segurança](#️-checklist-de-segurança)
+- [🏛️ Arquitetura](#-arquitetura)
+- [☁️ Deploy e Produção](#️-deploy-e-produção)
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 📦 Tecnologias
 
-## Compile and run the project
+- [NestJS](https://nestjs.com/)
+- [Passport](http://www.passportjs.org/) + JWT Strategy
+- [MySQL](https://www.mysql.com/) (via [DBeaver](https://dbeaver.io/))
+- [TypeORM](https://typeorm.io/)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [Supertest](https://www.npmjs.com/package/supertest)
+- [Jest](https://jestjs.io/)
+- [Swagger (OpenAPI)](https://swagger.io/)
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## 🚀 Como rodar localmente
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+1. **Clone o repositório**
 
 ```bash
-# unit tests
-$ npm run test
+git clone https://github.com/seu-usuario/nest-auth-jwt.git
+cd nest-auth-jwt
 
-# e2e tests
-$ npm run test:e2e
+2. **Instale as dependências**
+npm install
 
-# test coverage
-$ npm run test:cov
-```
+3. **Configure seu .env**
+Crie um arquivo .env com base no .env.example.
 
-## Deployment
+4. **Configure o MySQL**
+Use o DBeaver ou outro cliente para:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Criar o banco de dados
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Rodar as migrations (se houver)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+5. **Inicie o projeto**
+npm run start:dev
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+⚙️ Variáveis de ambiente
+Crie um arquivo .env com o seguinte conteúdo:
+JWT_SECRET=suachavesecreta
+JWT_REFRESH_SECRET=suarefreshsecreta
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+DATABASE_URL=mysql://usuario:senha@localhost:3306/seubanco
 
-## Resources
+📜 Scripts disponíveis
+Comando	Descrição
+npm run start:dev	Inicia o servidor em modo dev
+npm run test	Roda os testes unitários
+npm run test:e2e	Roda os testes de integração e2e
+npm run build	Compila o projeto para produção
+npm run start:prod	Inicia a versão buildada
 
-Check out a few resources that may come in handy when working with NestJS:
+🧪 Testes e2e
+Utiliza o supertest para simular o fluxo real de login, refresh, acesso e logout.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+npm run test:e2e
 
-## Support
+Casos cobertos:
+Login com credenciais válidas e inválidas
+Acesso à rota protegida com/sem token
+Refresh token válido, expirado ou revogado
+Logout invalida o refresh token
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+🔁 Fluxo de autenticação
+1. POST /auth/login
+   → access_token (curto)
+   → refresh_token (longo)
 
-## Stay in touch
+2. GET /auth/profile
+   → precisa do access_token válido
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+3. POST /auth/refresh
+   → envia refresh_token
+   → recebe novo par de tokens
 
-## License
+4. POST /auth/logout
+   → refresh_token revogado
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+📬 Testes via Postman
+Você pode importar a collection Postman incluída na pasta /docs/postman_collection.json
+Ou seguir os exemplos acima para testar manualmente.
+
+🧾 Documentação Swagger
+Acesse em tempo de execução:
+http://localhost:3000/api
+
+Inclui:
+Todas as rotas disponíveis
+Parâmetros e tipos
+Status code esperados
+Descrições úteis
+
+🛡️ Checklist de segurança
+✅ Senhas com hash (BCrypt)
+✅ Refresh tokens também são hasheados
+✅ Tokens com expiração curta (access) e longa (refresh)
+✅ Logout revoga o refresh
+✅ Middleware protege rotas privadas
+✅ Variáveis sensíveis fora do código (.env)
+✅ Nenhum segredo commitado
+
+🏛️ Arquitetura
+src/
+│
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── dto/
+│   ├── strategies/
+│   ├── guards/
+│
+├── user/
+├── common/
+│   ├── guards/
+│   └── interfaces/
+├── config/
+├── main.ts
+└── app.module.ts
+
+🔐 Estratégia de autenticação:
+JWT (Access token curto)
+Refresh token armazenado hasheado no DB
+Guard com Passport verifica token JWT
+
+☁️ Deploy e Produção
+Você pode preparar este projeto para produção com:
+
+ ✅ Build com npm run build
+ 🔒 Adicionar HTTPS em produção
+ ☁️ Docker (opcional)
+ 🚀 Procfile (Heroku)
+ 🧪 CI/CD (GitHub Actions)
+
+Projeto feito como base para futuras integrações com frontend (ex: Next.js) e uso de APIs externas como PokéAPI.
+
