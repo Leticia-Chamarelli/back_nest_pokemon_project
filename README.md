@@ -67,10 +67,10 @@ DATABASE_URL=mysql://usuario:senha@localhost:3306/seubanco
 
 📜 Scripts disponíveis
 Comando	Descrição
-npm run start:dev	Inicia o servidor em modo dev
-npm run test	Roda os testes unitários
-npm run test:e2e	Roda os testes de integração e2e
-npm run build	Compila o projeto para produção
+npm run start:dev	  Inicia o servidor em modo dev
+npm run test	      Roda os testes unitários
+npm run test:e2e	  Roda os testes de integração e2e
+npm run build	      Compila o projeto para produção
 npm run start:prod	Inicia a versão buildada
 
 🧪 Testes e2e
