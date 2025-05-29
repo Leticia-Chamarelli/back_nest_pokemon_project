@@ -2,12 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { JwtService } from '@nestjs/jwt';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
   let server: any;
   let accessToken: string;
-  let refreshToken: string; 
+  let refreshToken: string;
+  let jwtService: JwtService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,6 +19,8 @@ describe('Auth (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     server = app.getHttpServer();
+
+    jwtService = app.get(JwtService);
   });
 
   afterAll(async () => {
@@ -36,7 +40,7 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('refresh_token');
 
     accessToken = response.body.access_token;
-    refreshToken = response.body.refresh_token; 
+    refreshToken = response.body.refresh_token;
   });
 
   it('should not login with invalid credentials', async () => {
@@ -95,7 +99,7 @@ describe('Auth (e2e)', () => {
     expect(refreshAttempt.body).toHaveProperty('message');
   });
 
-    it('should fail to logout without being authenticated', async () => {
+  it('should fail to logout without being authenticated', async () => {
     const response = await request(server)
       .post('/auth/logout')
       .expect(401);
@@ -104,7 +108,6 @@ describe('Auth (e2e)', () => {
   });
 
   it('should not allow reuse of an invalidated refresh token', async () => {
-    // Login para obter tokens
     const loginResponse = await request(server)
       .post('/auth/login')
       .send({ username: 'testuser2', password: '123456' })
@@ -125,4 +128,21 @@ describe('Auth (e2e)', () => {
     expect(refreshResponse.body).toHaveProperty('message');
   });
 
+  it('should fail to access protected route with expired access token', async () => {
+    const payload = { username: 'testuser2', sub: 2 };
+
+    const shortLivedToken = jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '1s',
+    });
+
+    await new Promise((res) => setTimeout(res, 2000));
+
+    const response = await request(server)
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${shortLivedToken}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('message');
+  });
 });
