@@ -157,4 +157,32 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('message');
   });
 
+    it('should fail to refresh with invalid or expired refresh token', async () => {
+    const invalidToken = 'invalid.token.string';
+
+    const invalidResponse = await request(server)
+      .post('/auth/refresh')
+      .send({ refresh_token: invalidToken });
+
+    expect(invalidResponse.status).toBe(401);
+    expect(invalidResponse.body).toHaveProperty('message');
+
+    const payload = { username: 'testuser2', sub: 2 };
+    const expiredRefreshToken = app
+      .get(JwtService)
+      .sign(payload, {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: '1s',
+      });
+
+    await new Promise((res) => setTimeout(res, 2000));
+
+    const expiredResponse = await request(server)
+      .post('/auth/refresh')
+      .send({ refresh_token: expiredRefreshToken });
+
+    expect(expiredResponse.status).toBe(401);
+    expect(expiredResponse.body).toHaveProperty('message');
+  });
+
 });
