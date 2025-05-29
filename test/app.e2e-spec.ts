@@ -7,7 +7,7 @@ describe('Auth (e2e)', () => {
   let app: INestApplication;
   let server: any;
   let accessToken: string;
-  let refreshToken: string; // 👈 necessário para o teste de refresh/logout
+  let refreshToken: string; 
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,7 +36,7 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('refresh_token');
 
     accessToken = response.body.access_token;
-    refreshToken = response.body.refresh_token; // 👈 salvar o refresh token também
+    refreshToken = response.body.refresh_token; 
   });
 
   it('should not login with invalid credentials', async () => {
@@ -77,19 +77,16 @@ describe('Auth (e2e)', () => {
     expect(refreshResponse.body).toHaveProperty('access_token');
     expect(refreshResponse.body).toHaveProperty('refresh_token');
 
-    // Atualiza os tokens com os novos
     accessToken = refreshResponse.body.access_token;
     refreshToken = refreshResponse.body.refresh_token;
   });
 
   it('should logout and invalidate the refresh token', async () => {
-    // Realiza o logout
     await request(server)
       .post('/auth/logout')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(201);
 
-    // Tenta reutilizar o refresh token antigo
     const refreshAttempt = await request(server)
       .post('/auth/refresh')
       .send({ refresh_token: refreshToken })
@@ -97,4 +94,13 @@ describe('Auth (e2e)', () => {
 
     expect(refreshAttempt.body).toHaveProperty('message');
   });
+
+    it('should fail to logout without being authenticated', async () => {
+    const response = await request(server)
+      .post('/auth/logout')
+      .expect(401);
+
+    expect(response.body).toHaveProperty('message');
+  });
+
 });
