@@ -103,4 +103,26 @@ describe('Auth (e2e)', () => {
     expect(response.body).toHaveProperty('message');
   });
 
+  it('should not allow reuse of an invalidated refresh token', async () => {
+    // Login para obter tokens
+    const loginResponse = await request(server)
+      .post('/auth/login')
+      .send({ username: 'testuser2', password: '123456' })
+      .expect(201);
+
+    const refreshToken = loginResponse.body.refresh_token;
+
+    await request(server)
+      .post('/auth/logout')
+      .set('Authorization', `Bearer ${loginResponse.body.access_token}`)
+      .expect(201);
+
+    const refreshResponse = await request(server)
+      .post('/auth/refresh')
+      .send({ refresh_token: refreshToken })
+      .expect(401);
+
+    expect(refreshResponse.body).toHaveProperty('message');
+  });
+
 });
