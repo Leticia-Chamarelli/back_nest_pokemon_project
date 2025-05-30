@@ -58,18 +58,22 @@ Rodar as migrations (se houver)
 npm run start:dev
 
 ⚙️ Variáveis de ambiente
-Crie um arquivo .env com o seguinte conteúdo:
+Crie um arquivo .env com base no .env.example:
 JWT_SECRET=suachavesecreta
 JWT_REFRESH_SECRET=suarefreshsecreta
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-DATABASE_URL=mysql://usuario:senha@localhost:3306/seubanco
+TYPEORM_CONNECTION=mysql
+TYPEORM_HOST=localhost
+TYPEORM_PORT=3306
+TYPEORM_USERNAME=seu_usuario
+TYPEORM_PASSWORD=sua_senha
+TYPEORM_DATABASE=seu_banco
+
 
 📜 Scripts disponíveis
-Comando	Descrição
-npm run start:dev	  Inicia o servidor em modo dev
+Comando	            Descrição
+npm run start:dev	   Inicia o servidor em modo dev
 npm run test	      Roda os testes unitários
-npm run test:e2e	  Roda os testes de integração e2e
+npm run test:e2e	   Roda os testes de integração e2e
 npm run build	      Compila o projeto para produção
 npm run start:prod	Inicia a versão buildada
 
