@@ -75,7 +75,7 @@ describe('Auth (e2e)', () => {
   it('should refresh token with valid refresh_token', async () => {
     const refreshResponse = await request(server)
       .post('/auth/refresh')
-      .send({ refresh_token: refreshToken })
+      .send({ refreshToken: refreshToken })
       .expect(201);
 
     expect(refreshResponse.body).toHaveProperty('access_token');
