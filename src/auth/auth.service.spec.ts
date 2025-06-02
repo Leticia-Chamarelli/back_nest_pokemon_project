@@ -64,39 +64,57 @@ describe('AuthService', () => {
       const result = await service.validateUser('testuser', 'wrongpassword');
       expect(result).toBeNull();
     });
-  });
 
-describe('login', () => {
-  it('should return access and refresh tokens and update hashed refresh token', async () => {
-    const mockUser = { id: 1, username: 'testuser' };
+    it('should return null if the user does not exist (mockResolvedValueOnce)', async () => {
+      (usersService.findByUsername as jest.Mock).mockResolvedValueOnce(null);
 
-    const accessToken = 'access-token';
-    const refreshToken = 'refresh-token';
-    const hashedRefreshToken = 'hashed-refresh-token';
+      const result = await service.validateUser('nonexistent', 'anyPassword');
+      expect(result).toBeNull();
+    });
 
-    const signSpy = jest.spyOn(jwtService, 'sign');
-    signSpy
-      .mockReturnValueOnce(accessToken)  // Primeiro sign: access token
-      .mockReturnValueOnce(refreshToken); // Segundo sign: refresh token
+    it('should return null if the password is incorrect (mockResolvedValueOnce)', async () => {
+      const tempUser = {
+        id: 1,
+        username: 'testuser',
+        password: 'hashedPassword',
+      };
 
-    jest.spyOn(bcrypt, 'hash').mockImplementation(async () => hashedRefreshToken);
+      (usersService.findByUsername as jest.Mock).mockResolvedValueOnce(tempUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
 
-    const updateRefreshTokenSpy = jest
-      .spyOn(usersService, 'updateRefreshToken')
-      .mockResolvedValueOnce(undefined);
-
-    const result = await service.login(mockUser);
-
-    expect(signSpy).toHaveBeenCalledTimes(2);
-    expect(bcrypt.hash).toHaveBeenCalledWith(refreshToken, 10);
-    expect(updateRefreshTokenSpy).toHaveBeenCalledWith(mockUser.id, hashedRefreshToken);
-    expect(result).toEqual({
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      const result = await service.validateUser('testuser', 'wrongPassword');
+      expect(result).toBeNull();
     });
   });
-});
 
+  describe('login', () => {
+    it('should return access and refresh tokens and update hashed refresh token', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
 
+      const accessToken = 'access-token';
+      const refreshToken = 'refresh-token';
+      const hashedRefreshToken = 'hashed-refresh-token';
 
+      const signSpy = jest.spyOn(jwtService, 'sign');
+      signSpy
+        .mockReturnValueOnce(accessToken)  
+        .mockReturnValueOnce(refreshToken); 
+
+      jest.spyOn(bcrypt, 'hash').mockImplementation(async () => hashedRefreshToken);
+
+      const updateRefreshTokenSpy = jest
+        .spyOn(usersService, 'updateRefreshToken')
+        .mockResolvedValueOnce(undefined);
+
+      const result = await service.login(mockUser);
+
+      expect(signSpy).toHaveBeenCalledTimes(2);
+      expect(bcrypt.hash).toHaveBeenCalledWith(refreshToken, 10);
+      expect(updateRefreshTokenSpy).toHaveBeenCalledWith(mockUser.id, hashedRefreshToken);
+      expect(result).toEqual({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+    });
+  });
 });
