@@ -175,4 +175,21 @@ describe('refreshToken', () => {
   });
 });
 
+describe('logout', () => {
+  it('should call usersService.updateRefreshToken with null to invalidate the token', async () => {
+    const userId = 1;
+    (usersService.updateRefreshToken as jest.Mock).mockResolvedValue(undefined);
+
+    await service.logout(userId);
+
+    expect(usersService.updateRefreshToken).toHaveBeenCalledWith(userId, null);
+  });
+
+  it('should throw an error if usersService.updateRefreshToken fails', async () => {
+    const userId = 1;
+    (usersService.updateRefreshToken as jest.Mock).mockRejectedValue(new Error('DB error'));
+
+    await expect(service.logout(userId)).rejects.toThrow('DB error');
+  });
+});
 });
