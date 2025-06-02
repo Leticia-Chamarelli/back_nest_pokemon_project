@@ -65,4 +65,38 @@ describe('AuthService', () => {
       expect(result).toBeNull();
     });
   });
+
+describe('login', () => {
+  it('should return access and refresh tokens and update hashed refresh token', async () => {
+    const mockUser = { id: 1, username: 'testuser' };
+
+    const accessToken = 'access-token';
+    const refreshToken = 'refresh-token';
+    const hashedRefreshToken = 'hashed-refresh-token';
+
+    const signSpy = jest.spyOn(jwtService, 'sign');
+    signSpy
+      .mockReturnValueOnce(accessToken)  // Primeiro sign: access token
+      .mockReturnValueOnce(refreshToken); // Segundo sign: refresh token
+
+    jest.spyOn(bcrypt, 'hash').mockImplementation(async () => hashedRefreshToken);
+
+    const updateRefreshTokenSpy = jest
+      .spyOn(usersService, 'updateRefreshToken')
+      .mockResolvedValueOnce(undefined);
+
+    const result = await service.login(mockUser);
+
+    expect(signSpy).toHaveBeenCalledTimes(2);
+    expect(bcrypt.hash).toHaveBeenCalledWith(refreshToken, 10);
+    expect(updateRefreshTokenSpy).toHaveBeenCalledWith(mockUser.id, hashedRefreshToken);
+    expect(result).toEqual({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+  });
+});
+
+
+
 });
