@@ -1,18 +1,68 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;
+  let usersService: Partial<UsersService>;
+  let jwtService: Partial<JwtService>;
+
+  const mockUser = {
+    id: 1,
+    username: 'testuser',
+    password: 'hashedpassword',
+    refreshToken: 'somehashedrefreshtoken',
+  };
 
   beforeEach(async () => {
+    usersService = {
+      findByUsername: jest.fn(),
+      findOne: jest.fn(),
+      updateRefreshToken: jest.fn(),
+    };
+
+    jwtService = {
+      sign: jest.fn(),
+      verify: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        { provide: UsersService, useValue: usersService },
+        { provide: JwtService, useValue: jwtService },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('validateUser', () => {
+    it('should return user data without password if credentials are valid', async () => {
+      (usersService.findByUsername as jest.Mock).mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.validateUser('testuser', 'validpassword');
+      expect(result).toEqual({ id: 1, username: 'testuser', refreshToken: 'somehashedrefreshtoken' });
+    });
+
+    it('should return null if user is not found', async () => {
+      (usersService.findByUsername as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.validateUser('invaliduser', 'password');
+      expect(result).toBeNull();
+    });
+
+    it('should return null if password is invalid', async () => {
+      (usersService.findByUsername as jest.Mock).mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      const result = await service.validateUser('testuser', 'wrongpassword');
+      expect(result).toBeNull();
+    });
   });
 });
