@@ -6,6 +6,8 @@ import {
   UseGuards,
   Get,
   Req,
+  ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -38,6 +40,7 @@ export class AuthController {
         username: { type: 'string', example: 'newuser' },
         password: { type: 'string', example: 'password123' },
       },
+      required: ['username', 'password'],
     },
   })
   @ApiResponse({
@@ -50,14 +53,28 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 401, description: 'Username already exists' })
+  @ApiResponse({
+    status: 409,
+    description: 'Username already exists',
+    schema: {
+      example: {
+        statusCode: 409,
+        message: 'Username already exists',
+        error: 'Conflict',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing fields',
+  })
   async register(
     @Body('username') username: string,
     @Body('password') password: string,
   ) {
     const existing = await this.usersService.findByUsername(username);
     if (existing) {
-      throw new UnauthorizedException('Username already exists');
+      throw new ConflictException('Username already exists');
     }
     const user = await this.usersService.create(username, password);
     return {
@@ -79,7 +96,21 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid credentials',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid credentials',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing fields',
+  })
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
       loginDto.username,
@@ -103,6 +134,17 @@ export class AuthController {
       },
     },
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired refresh token',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid or expired refresh token',
+        error: 'Unauthorized',
+      },
+    },
+  })
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto.refreshToken);
   }
@@ -123,6 +165,17 @@ export class AuthController {
       },
     },
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid access token',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+        error: 'Unauthorized',
+      },
+    },
+  })
   getProfile(@Req() req: RequestWithUser) {
     return { user: req.user };
   }
@@ -137,6 +190,17 @@ export class AuthController {
     schema: {
       example: {
         message: 'Logout successful',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid access token',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+        error: 'Unauthorized',
       },
     },
   })
