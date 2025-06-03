@@ -23,7 +23,16 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'List of users returned' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of users returned',
+    schema: {
+      example: [
+        { id: 1, username: 'user1' },
+        { id: 2, username: 'user2' },
+      ],
+    },
+  })
   async findAll() {
     return this.usersService.findAll();
   }
@@ -31,7 +40,13 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', type: Number, example: 1 })
-  @ApiResponse({ status: 200, description: 'User returned' })
+  @ApiResponse({
+    status: 200,
+    description: 'User returned',
+    schema: {
+      example: { id: 1, username: 'user1' },
+    },
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(@Param('id') id: number) {
     const user = await this.usersService.findOne(id);
@@ -51,9 +66,16 @@ export class UsersController {
         username: { type: 'string', example: 'updateduser' },
         password: { type: 'string', example: 'newpassword123' },
       },
+      required: ['username', 'password'],
     },
   })
-  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    schema: {
+      example: { id: 1, username: 'updateduser' },
+    },
+  })
   async update(
     @Param('id') id: number,
     @Body('username') username: string,
@@ -65,7 +87,13 @@ export class UsersController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by ID' })
   @ApiParam({ name: 'id', type: Number, example: 1 })
-  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'User deleted successfully',
+    schema: {
+      example: { message: 'User deleted successfully' },
+    },
+  })
   async remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
