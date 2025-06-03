@@ -13,7 +13,15 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RequestWithUser } from '../common/interfaces/request-with-user.interface';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh.dto';
+import {
+  ApiTags,
+  ApiBody,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -22,6 +30,18 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @ApiOperation({ summary: 'Register new user' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string', example: 'newuser' },
+        password: { type: 'string', example: 'password123' },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 401, description: 'Username already exists' })
   async register(
     @Body('username') username: string,
     @Body('password') password: string,
@@ -38,6 +58,10 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'Login and receive tokens' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
       loginDto.username,
@@ -50,18 +74,27 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token using refresh token' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({ status: 200, description: 'Access token refreshed' })
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto.refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user profile (protected)' })
+  @ApiResponse({ status: 200, description: 'User profile returned' })
   getProfile(@Req() req: RequestWithUser) {
     return { user: req.user };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout user (protected)' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
   async logout(@Req() req: RequestWithUser) {
     await this.authService.logout(req.user.id);
     return { message: 'Logout successful' };
