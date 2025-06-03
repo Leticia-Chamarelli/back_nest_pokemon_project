@@ -40,7 +40,16 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    schema: {
+      example: {
+        message: 'User created',
+        user: { id: 1, username: 'newuser' },
+      },
+    },
+  })
   @ApiResponse({ status: 401, description: 'Username already exists' })
   async register(
     @Body('username') username: string,
@@ -60,7 +69,16 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Login and receive tokens' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    schema: {
+      example: {
+        accessToken: 'access_token_example',
+        refreshToken: 'refresh_token_example',
+      },
+    },
+  })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
@@ -76,7 +94,15 @@ export class AuthController {
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token using refresh token' })
   @ApiBody({ type: RefreshTokenDto })
-  @ApiResponse({ status: 200, description: 'Access token refreshed' })
+  @ApiResponse({
+    status: 200,
+    description: 'Access token refreshed',
+    schema: {
+      example: {
+        accessToken: 'new_access_token_example',
+      },
+    },
+  })
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto.refreshToken);
   }
@@ -85,7 +111,18 @@ export class AuthController {
   @Get('profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user profile (protected)' })
-  @ApiResponse({ status: 200, description: 'User profile returned' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile returned',
+    schema: {
+      example: {
+        user: {
+          id: 1,
+          username: 'exampleUser',
+        },
+      },
+    },
+  })
   getProfile(@Req() req: RequestWithUser) {
     return { user: req.user };
   }
@@ -94,7 +131,15 @@ export class AuthController {
   @Post('logout')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout user (protected)' })
-  @ApiResponse({ status: 200, description: 'Logout successful' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout successful',
+    schema: {
+      example: {
+        message: 'Logout successful',
+      },
+    },
+  })
   async logout(@Req() req: RequestWithUser) {
     await this.authService.logout(req.user.id);
     return { message: 'Logout successful' };
