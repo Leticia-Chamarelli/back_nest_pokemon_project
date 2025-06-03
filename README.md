@@ -105,8 +105,22 @@ Logout invalida o refresh token
 
 
 📬 Testes via Postman
-Você pode importar a collection Postman incluída na pasta /docs/postman_collection.json
-Ou seguir os exemplos acima para testar manualmente.
+Você pode importar a collection do Postman que está incluída no projeto em:
+
+/docs/back_nest_auth.postman_collection.json
+
+Como usar:
+Abra o Postman.
+
+Clique em Import → Upload Files.
+
+Selecione o arquivo back_nest_auth.postman_collection.json.
+
+A collection será importada com todos os endpoints configurados para teste.
+
+Atualize a variável de ambiente (se houver) para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
+
+Assim, você pode testar todas as rotas rapidamente com exemplos prontos.
 
 🧾 Documentação Swagger
 Acesse em tempo de execução:
