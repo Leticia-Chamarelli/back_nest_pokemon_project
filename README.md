@@ -39,7 +39,7 @@ Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/)
 
 ```bash
 git clone https://github.com/seu-usuario/nest-auth-jwt.git
-cd nest-auth-jwt
+cd nest-auth-jwt```
 
 2. **Instale as dependências**
 npm install
@@ -68,14 +68,16 @@ TYPEORM_USERNAME=seu_usuario
 TYPEORM_PASSWORD=sua_senha
 TYPEORM_DATABASE=seu_banco
 
-
 📜 Scripts disponíveis
-Comando	            Descrição
-npm run start:dev	   Inicia o servidor em modo dev
-npm run test	      Roda os testes unitários
-npm run test:e2e	   Roda os testes de integração e2e
-npm run build	      Compila o projeto para produção
-npm run start:prod	Inicia a versão buildada
+
+| Comando           | Descrição                            |
+|-------------------|----------------------------------------|
+| `npm run start:dev`   | Inicia o servidor em modo dev         |
+| `npm run test`        | Roda os testes unitários              |
+| `npm run test:e2e`    | Roda os testes de integração e2e      |
+| `npm run build`       | Compila o projeto para produção       |
+| `npm run start:prod`  | Inicia a versão buildada              |
+
 
 🧪 Testes e2e
 Utiliza o supertest para simular o fluxo real de login, refresh, acesso e logout.
@@ -145,16 +147,16 @@ Descrições úteis
 📁 src
 │
 ├── 📁 auth
-│   ├── auth.controller.ts
-│   ├── auth.controller.spec.ts
-│   ├── auth.module.ts
-│   ├── auth.service.ts
-│   ├── auth.service.spec.ts
 │   ├── 📁 dto
 │   │   ├── login.dto.ts
 │   │   └── refresh.dto.ts
 │   ├── 📁 strategies
 │   │   └── jwt.strategy.ts
+│   ├── auth.controller.spec.ts
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.spec.ts
+│   ├── auth.service.ts
 │
 ├── 📁 common
 │   ├── 📁 filters
@@ -169,29 +171,38 @@ Descrições úteis
 │
 ├── 📁 users
 │   ├── user.entity.ts
-│   ├── users.controller.ts
 │   ├── users.controller.spec.ts
-│   ├── users.service.ts
+│   ├── users.controller.ts
+│   ├── users.module.ts
 │   ├── users.service.spec.ts
-│   └── users.module.ts
+│   └── users.service.ts
 │
-├── app.controller.ts
 ├── app.controller.spec.ts
-├── app.service.ts
+├── app.controller.ts
 ├── app.module.ts
-└── main.ts
-
+├── app.service.ts
+├── main.ts
+└── swagger.ts
 📁 test
 ├── app.e2e-spec.ts
 └── jest-e2e.json
-
 📄 .env.example
 📄 .gitignore
-📄 README.md
-📄 package.json
-📄 tsconfig.json
+📄 .prettierrc
+📄 back_nest_auth.postman_collection.json
+📄 data-source.ts
+📄 eslint.config.mjs
 📄 nest-cli.json
+📄 package-lock.json
+📄 package.json
+📄 README.md
+📄 tsconfig.build.json
+📄 tsconfig.json
 
+🚫 Ignorados pelo Git:
+- .env
+- dist/
+- node_modules/
 
 🔐 Estratégia de autenticação:
 JWT (Access token curto)
@@ -199,13 +210,58 @@ Refresh token armazenado hasheado no DB
 Guard com Passport verifica token JWT
 
 ☁️ Deploy e Produção
-Você pode preparar este projeto para produção com:
+Este projeto pode ser hospedado gratuitamente no Render, uma plataforma moderna para deploy de aplicações Node.js.
 
- ✅ Build com npm run build
- 🔒 Adicionar HTTPS em produção
- ☁️ Docker (opcional)
- 🚀 Procfile (Heroku)
- 🧪 CI/CD (GitHub Actions)
+Etapas de Deploy no Render:
+Crie um repositório no GitHub com este projeto.
+
+Acesse o painel da Render e clique em New Web Service.
+
+Configure o serviço com as seguintes opções:
+
+Environment: Node
+
+Build Command: npm install && npm run build
+
+Start Command: npm run start:prod
+
+Branch: escolha a que deseja usar para o deploy automático
+
+Region: a mais próxima da sua base de usuários
+
+Environment Variables: adicione todas as variáveis do seu .env.example
+
+Banco de dados:
+
+Você pode criar um banco diretamente na Render (MySQL ou PostgreSQL).
+
+Copie o host, usuário, senha e nome do banco e configure nas variáveis de ambiente do serviço na Render.
+
+Atualize seu arquivo data-source.ts para ler as variáveis de ambiente.
+
+Ajuste o main.ts para usar a porta do Render:
+
+```ts
+const port = process.env.PORT || 3000;
+await app.listen(port);
+```
+
+Pronto! O Render cuidará do build e deploy automático sempre que houver push para a branch configurada.
+
+Após o Deploy
+Acesse https://nome-do-seu-app.onrender.com/api para visualizar a documentação Swagger.
+
+Atualize a URL base no Postman para testar os endpoints no ambiente em nuvem.
+
+Extras opcionais para produção
+Use npm run build para gerar a versão otimizada antes do deploy.
+
+HTTPS já é ativado automaticamente no Render.
+
+Deploy contínuo com push no GitHub.
+
+Execute os testes localmente antes de subir: npm run test e npm run test:e2e.
+
 
 Projeto feito como base para futuras integrações com frontend (ex: Next.js) e uso de APIs externas como PokéAPI.
 
