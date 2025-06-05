@@ -243,70 +243,9 @@ Inclui:
 - Guard com Passport verifica token JWT
 
 ## ☁️ Deploy e Produção
-Este projeto pode ser hospedado gratuitamente no Render, uma plataforma moderna para deploy de aplicações Node.js.
-
-Etapas de Deploy no Render:
-
-1. Crie um repositório no GitHub com este projeto.
-
-2. Acesse o painel da Render e clique em New Web Service.
-
-3. Configure o serviço com as seguintes opções:
-
-- Environment: `Node`
-
-- Build Command: 
-```bash
-npm install && npm run build
-```
-
-- Start Command: 
-```bash
-npm run start:prod
-```
-
-- Branch: escolha a que deseja usar para o deploy automático
-
-- Region: a mais próxima da sua base de usuários
-
-- Environment Variables: adicione todas as variáveis do seu `.env.example`
-
-### 🗄️ Banco de Dados
-
-Você pode criar um banco diretamente na Render (MySQL ou PostgreSQL).
-
-- Copie o host, usuário, senha e nome do banco e configure nas variáveis de ambiente do serviço na Render.
-
-- Atualize seu arquivo `data-source.ts` para ler as variáveis de ambiente.
-
-- Ajuste o `main.ts` para usar a porta do Render:
-
-```bash
-const port = process.env.PORT || 3000;
-await app.listen(port);
-```
-
-Pronto! O Render cuidará do build e deploy automático sempre que houver push para a branch configurada.
-
-### ✅ Após o Deploy
-- Acesse https://nome-do-seu-app.onrender.com/api para visualizar a documentação Swagger.
-
-- Atualize a URL base no Postman para testar os endpoints no ambiente em nuvem.
-
-### ⚙️ Extras opcionais para produção
-Gere uma versão otimizada do projeto:
-```bash
-npm run build
-```
-- HTTPS já é ativado automaticamente no Render.
-
-- Deploy contínuo com push no GitHub.
-
-- Execute os testes localmente antes de subir: 
-```bash
-npm run test 
-npm run test:e2e
-```
+> ⚠️ **Este tópico será atualizado após o deploy.**  
+> 
+> Assim que a aplicação for hospedada com sucesso no Render, esta seção será revisada com base nas etapas realizadas na prática.
 
 ## 🧩  Integrações futuras
 
