@@ -35,30 +35,42 @@ Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/)
 
 ## 🚀 Como rodar localmente
 
-1. **Clone o repositório**
+1. **Clone o repositório**␣
 
 ```bash
 git clone https://github.com/seu-usuario/nest-auth-jwt.git
-cd nest-auth-jwt```
+
+cd nest-auth-jwt
+```
 
 2. **Instale as dependências**
+```bash
 npm install
+```
 
-3. **Configure seu .env**
-Crie um arquivo .env com base no .env.example.
+3. **Configure seu `.env`**
+
+   Crie um arquivo `.env` com base no arquivo `.env.example`.
+
 
 4. **Configure o MySQL**
-Use o DBeaver ou outro cliente para:
 
-Criar o banco de dados
+   Use o DBeaver ou outro cliente para:
+   - Criar o banco de dados; e
 
-Rodar as migrations (se houver)
+   - Rodar as migrations, se houver.
 
+ 
 5. **Inicie o projeto**
+```bash
 npm run start:dev
+```
 
-⚙️ Variáveis de ambiente
-Crie um arquivo .env com base no .env.example:
+## ⚙️ Variáveis de ambiente
+
+Crie um arquivo `.env` com base no `.env.example`:
+
+```bash
 JWT_SECRET=suachavesecreta
 JWT_REFRESH_SECRET=suarefreshsecreta
 TYPEORM_CONNECTION=mysql
@@ -67,11 +79,12 @@ TYPEORM_PORT=3306
 TYPEORM_USERNAME=seu_usuario
 TYPEORM_PASSWORD=sua_senha
 TYPEORM_DATABASE=seu_banco
+```
 
-📜 Scripts disponíveis
+## 📜 Scripts disponíveis
 
-| Comando           | Descrição                            |
-|-------------------|----------------------------------------|
+| Comando               | Descrição                             |
+|-----------------------|---------------------------------------|
 | `npm run start:dev`   | Inicia o servidor em modo dev         |
 | `npm run test`        | Roda os testes unitários              |
 | `npm run test:e2e`    | Roda os testes de integração e2e      |
@@ -79,18 +92,24 @@ TYPEORM_DATABASE=seu_banco
 | `npm run start:prod`  | Inicia a versão buildada              |
 
 
-🧪 Testes e2e
+## 🧪 Testes e2e
 Utiliza o supertest para simular o fluxo real de login, refresh, acesso e logout.
 
+```bash
 npm run test:e2e
+```
 
 Casos cobertos:
-Login com credenciais válidas e inválidas
-Acesso à rota protegida com/sem token
-Refresh token válido, expirado ou revogado
-Logout invalida o refresh token
 
-🔁 Fluxo de autenticação
+- Login com credenciais válidas e inválidas
+
+-  Acesso à rota protegida com/sem token
+
+- Refresh token válido, expirado ou revogado
+
+- Logout invalida o refresh token
+
+## 🔁 Fluxo de autenticação
 1. POST /auth/login
    → access_token (curto)
    → refresh_token (longo)
@@ -106,44 +125,53 @@ Logout invalida o refresh token
    → refresh_token revogado
 
 
-📬 Testes via Postman
-Você pode importar a collection do Postman que está incluída no projeto em:
+## 📬 Testes via Postman
+Você pode importar a collection do Postman que está incluída no projeto em `/docs/back_nest_auth.postman_collection.json`
 
-/docs/back_nest_auth.postman_collection.json
+### Como usar:
+- Abra o Postman
 
-Como usar:
-Abra o Postman.
+- Clique em Import → Upload Files.
 
-Clique em Import → Upload Files.
+- Selecione o arquivo `/docs/back_nest_auth.postman_collection.json`
 
-Selecione o arquivo back_nest_auth.postman_collection.json.
+- A collection será importada com todos os endpoints já configurados para teste.
 
-A collection será importada com todos os endpoints configurados para teste.
-
-Atualize a variável de ambiente (se houver) para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
+- Atualize a variável de ambiente (se houver) para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
 
 Assim, você pode testar todas as rotas rapidamente com exemplos prontos.
 
-🧾 Documentação Swagger
+## 🧾 Documentação Swagger
 Acesse em tempo de execução:
 http://localhost:3000/api
 
 Inclui:
-Todas as rotas disponíveis
-Parâmetros e tipos
-Status code esperados
-Descrições úteis
 
-🛡️ Checklist de segurança
+- Todas as rotas disponíveis
+
+- Parâmetros e tipos de dados
+
+- Códigos de status esperados
+
+- Descrições e exemplos úteis
+
+## 🛡️ Checklist de segurança
 ✅ Senhas com hash (BCrypt)
+
 ✅ Refresh tokens também são hasheados
+
 ✅ Tokens com expiração curta (access) e longa (refresh)
+
 ✅ Logout revoga o refresh
+
 ✅ Middleware protege rotas privadas
+
 ✅ Variáveis sensíveis fora do código (.env)
+
 ✅ Nenhum segredo commitado
 
-🏛️ Arquitetura
+## 🏛️ Arquitetura
+```bash
 📁 src
 │
 ├── 📁 auth
@@ -198,70 +226,89 @@ Descrições úteis
 📄 README.md
 📄 tsconfig.build.json
 📄 tsconfig.json
-
+```
 🚫 Ignorados pelo Git:
+```bash
 - .env
 - dist/
 - node_modules/
+```
 
-🔐 Estratégia de autenticação:
-JWT (Access token curto)
-Refresh token armazenado hasheado no DB
-Guard com Passport verifica token JWT
+## 🔐 Estratégia de autenticação:
 
-☁️ Deploy e Produção
+- JWT (Access token curto)
+
+- Refresh token armazenado hasheado no DB
+
+- Guard com Passport verifica token JWT
+
+## ☁️ Deploy e Produção
 Este projeto pode ser hospedado gratuitamente no Render, uma plataforma moderna para deploy de aplicações Node.js.
 
 Etapas de Deploy no Render:
-Crie um repositório no GitHub com este projeto.
 
-Acesse o painel da Render e clique em New Web Service.
+1. Crie um repositório no GitHub com este projeto.
 
-Configure o serviço com as seguintes opções:
+2. Acesse o painel da Render e clique em New Web Service.
 
-Environment: Node
+3. Configure o serviço com as seguintes opções:
 
-Build Command: npm install && npm run build
+- Environment: `Node`
 
-Start Command: npm run start:prod
+- Build Command: 
+```bash
+npm install && npm run build
+```
 
-Branch: escolha a que deseja usar para o deploy automático
+- Start Command: 
+```bash
+npm run start:prod
+```
 
-Region: a mais próxima da sua base de usuários
+- Branch: escolha a que deseja usar para o deploy automático
 
-Environment Variables: adicione todas as variáveis do seu .env.example
+- Region: a mais próxima da sua base de usuários
 
-Banco de dados:
+- Environment Variables: adicione todas as variáveis do seu `.env.example`
+
+### 🗄️ Banco de Dados
 
 Você pode criar um banco diretamente na Render (MySQL ou PostgreSQL).
 
-Copie o host, usuário, senha e nome do banco e configure nas variáveis de ambiente do serviço na Render.
+- Copie o host, usuário, senha e nome do banco e configure nas variáveis de ambiente do serviço na Render.
 
-Atualize seu arquivo data-source.ts para ler as variáveis de ambiente.
+- Atualize seu arquivo `data-source.ts` para ler as variáveis de ambiente.
 
-Ajuste o main.ts para usar a porta do Render:
+- Ajuste o `main.ts` para usar a porta do Render:
 
-```ts
+```bash
 const port = process.env.PORT || 3000;
 await app.listen(port);
 ```
 
 Pronto! O Render cuidará do build e deploy automático sempre que houver push para a branch configurada.
 
-Após o Deploy
-Acesse https://nome-do-seu-app.onrender.com/api para visualizar a documentação Swagger.
+### ✅ Após o Deploy
+- Acesse https://nome-do-seu-app.onrender.com/api para visualizar a documentação Swagger.
 
-Atualize a URL base no Postman para testar os endpoints no ambiente em nuvem.
+- Atualize a URL base no Postman para testar os endpoints no ambiente em nuvem.
 
-Extras opcionais para produção
-Use npm run build para gerar a versão otimizada antes do deploy.
+### ⚙️ Extras opcionais para produção
+Gere uma versão otimizada do projeto:
+```bash
+npm run build
+```
+- HTTPS já é ativado automaticamente no Render.
 
-HTTPS já é ativado automaticamente no Render.
+- Deploy contínuo com push no GitHub.
 
-Deploy contínuo com push no GitHub.
+- Execute os testes localmente antes de subir: 
+```bash
+npm run test 
+npm run test:e2e
+```
 
-Execute os testes localmente antes de subir: npm run test e npm run test:e2e.
+## 🧩  Integrações futuras
 
-
-Projeto feito como base para futuras integrações com frontend (ex: Next.js) e uso de APIs externas como PokéAPI.
+Este projeto foi desenvolvido como base para integração com um frontend (ex: Next.js) e consumo de APIs externas (ex: PokeAPI).
 
