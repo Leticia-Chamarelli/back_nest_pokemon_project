@@ -24,12 +24,13 @@ Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/)
 
 - [NestJS](https://nestjs.com/)
 - [Passport](http://www.passportjs.org/) + JWT Strategy
-- [MySQL](https://www.mysql.com/) (via [DBeaver](https://dbeaver.io/))
+- [PostgreSQL](https://www.postgresql.org/) (via [DBeaver](https://dbeaver.io/))
 - [TypeORM](https://typeorm.io/)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [Supertest](https://www.npmjs.com/package/supertest)
 - [Jest](https://jestjs.io/)
 - [Swagger (OpenAPI)](https://swagger.io/)
+
 
 ---
 
@@ -53,7 +54,7 @@ npm install
    Crie um arquivo `.env` com base no arquivo `.env.example`.
 
 
-4. **Configure o MySQL**
+4. **Configure o PostgreSQL**
 
    Use o DBeaver ou outro cliente para:
    - Criar o banco de dados; e
@@ -71,14 +72,16 @@ npm run start:dev
 Crie um arquivo `.env` com base no `.env.example`:
 
 ```bash
-JWT_SECRET=suachavesecreta
-JWT_REFRESH_SECRET=suarefreshsecreta
-TYPEORM_CONNECTION=mysql
-TYPEORM_HOST=localhost
-TYPEORM_PORT=3306
-TYPEORM_USERNAME=seu_usuario
-TYPEORM_PASSWORD=sua_senha
-TYPEORM_DATABASE=seu_banco
+# JWT
+JWT_SECRET=your_jwt_secret_here
+JWT_REFRESH_SECRET=your_refresh_jwt_secret_here
+
+# DATABASE
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_password_here
+DB_NAME=back_nest_auth
 ```
 
 ## 📜 Scripts disponíveis
@@ -110,19 +113,22 @@ Casos cobertos:
 - Logout invalida o refresh token
 
 ## 🔁 Fluxo de autenticação
-1. POST /auth/login
-   → access_token (curto)
-   → refresh_token (longo)
+1. POST /auth/register  
+   → Cria um novo usuário
 
-2. GET /auth/profile
-   → precisa do access_token válido
+2. POST /auth/login  
+   → Recebe access_token (curto)  
+   → Recebe refresh_token (longo)
 
-3. POST /auth/refresh
-   → envia refresh_token
-   → recebe novo par de tokens
+3. GET /auth/profile  
+   → Requer access_token válido
 
-4. POST /auth/logout
-   → refresh_token revogado
+4. POST /auth/refresh  
+   → Envia refresh_token  
+   → Recebe novo par de tokens
+
+5. POST /auth/logout  
+   → Refresh_token revogado
 
 
 ## 📬 Testes via Postman
@@ -174,6 +180,8 @@ Inclui:
 ```bash
 📁 src
 │
+├── 📁 .vscode
+│   └── settings.json
 ├── 📁 auth
 │   ├── 📁 dto
 │   │   ├── login.dto.ts
@@ -225,6 +233,7 @@ Inclui:
 📄 package.json
 📄 README.md
 📄 tsconfig.build.json
+📄 tsconfig.build.tsbuildinfo
 📄 tsconfig.json
 ```
 🚫 Ignorados pelo Git:
@@ -243,9 +252,62 @@ Inclui:
 - Guard com Passport verifica token JWT
 
 ## ☁️ Deploy e Produção
-> ⚠️ **Este tópico será atualizado após o deploy.**  
-> 
-> Assim que a aplicação for hospedada com sucesso no Render, esta seção será revisada com base nas etapas realizadas na prática.
+Este projeto está configurado para deploy na plataforma Render, que oferece hospedagem simples para aplicações Node.js.
+
+### Passos para deploy no Render:
+
+1. Configurar repositório Git
+
+- Certifique-se que seu código esteja versionado e no GitHub (ou outro repositório suportado).
+
+2. Criar um novo Web Service no Render
+
+- Escolha o repositório da API NestJS.
+
+- Configure o ambiente para Node.js.
+
+- Configure a porta da aplicação (por padrão, Render define a variável PORT, que sua aplicação deve respeitar).
+
+- Ajuste a variável PORT no NestJS para usar process.env.PORT (exemplo abaixo).
+
+3. Configurar variáveis de ambiente no Render
+- Adicione todas as variáveis .env necessárias, incluindo:
+
+- `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME` para PostgreSQL
+
+- `JWT_SECRET`, `JWT_REFRESH_SECRET`
+
+- `PORT` (se necessário)
+
+4. Banco de dados
+
+- A aplicação foi migrada de MySQL para PostgreSQL para compatibilidade com o ambiente do Render.
+
+- Você pode usar o banco de dados PostgreSQL oferecido pelo próprio Render ou outro serviço externo.
+
+- Configure as variáveis do banco no painel do Render.
+
+5. Adaptação da aplicação para a porta do Render
+no `seu main.ts`, certifique-se que a aplicação escute a porta da variável de ambiente PORT, assim:
+
+```bash
+const port = process.env.PORT || 3000;
+await app.listen(port);
+```
+
+6. Deploy automático ou manual
+
+- O Render pode disparar deploy automático a cada push na branch principal.
+
+- Ou você pode fazer deploy manual via painel.
+
+### Testes pós-deploy
+- As rotas da API podem ser testadas via Postman usando a URL pública fornecida pelo Render, por exemplo:
+https://back-nest-auth.onrender.com/auth/login
+
+- O endpoint raiz [/](https://back-nest-auth.onrender.com/) retorna uma mensagem simples para verificar que a API está no ar.
+
+- Caso receba erro 404, verifique as rotas e a configuração da aplicação.
 
 ## 🧩  Integrações futuras
 
