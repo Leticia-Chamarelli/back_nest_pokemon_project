@@ -1,7 +1,7 @@
 {
-  "name": "back_nest_auth",
+  "name": "back-nest-pokemon-project",
   "version": "0.0.1",
-  "description": "",
+  "description": "A NestJS backend with JWT authentication and integration with the PokéAPI",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
