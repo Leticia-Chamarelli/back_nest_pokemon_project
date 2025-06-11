@@ -3,7 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { PokeapiModule} from './pokeapi/pokeapi.module';
+import { PokeapiModule } from './pokeapi/pokeapi.module';
+import { PokemonsModule } from './pokemons/pokemons.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -23,6 +24,7 @@ import { AppService } from './app.service';
     UsersModule,
     AuthModule,
     PokeapiModule,
+    PokemonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

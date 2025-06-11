@@ -18,7 +18,7 @@ export class SightedPokemon {
   @Column()
   region: string;
 
-  @ManyToOne(() => User, (user) => user.sightedPokemons)
+  @ManyToOne(() => User, (user) => user.sightedPokemon)
   user: User;
 
   @CreateDateColumn()

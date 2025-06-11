@@ -21,6 +21,6 @@ export class User {
   capturedPokemons: CapturedPokemon[];
 
   @OneToMany(() => SightedPokemon, (sp) => sp.user)
-  sightedPokemons: SightedPokemon[];
+  sightedPokemon: SightedPokemon[];
 }
 
