@@ -19,4 +19,10 @@ export class PokeapiService {
     const response = await firstValueFrom(this.httpService.get(url));
     return response.data;
   }
+
+  async listPokemons(limit = 20, offset = 0) {
+  const url = `${this.baseUrl}/pokemon?limit=${limit}&offset=${offset}`;
+  const response = await firstValueFrom(this.httpService.get(url));
+  return response.data;
+  }
 }

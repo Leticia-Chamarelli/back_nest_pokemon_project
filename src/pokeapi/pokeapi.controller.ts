@@ -7,16 +7,14 @@ export class PokeapiController {
   constructor(private readonly pokeapiService: PokeapiService) {}
 
   @Get()
-  getAll(@Query() query: PokemonQueryDto) {
-    const { limit, offset } = query;
-    return this.pokeapiService.getAllPokemons(
-      Number(limit) || 20,
-      Number(offset) || 0,
-    );
+  async findAll(@Query() query: PokemonQueryDto) {
+    const limit = query.limit ? parseInt(query.limit, 10) : 20;
+    const offset = query.offset ? parseInt(query.offset, 10) : 0;
+    return this.pokeapiService.getAllPokemons(limit, offset);
   }
 
   @Get(':id')
-  getByIdOrName(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.pokeapiService.getPokemonByIdOrName(id);
   }
 }
