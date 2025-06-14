@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { SightedService } from './sighted.service';
 import { CreateSightingDto } from './dto/create-sighting.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -13,4 +13,11 @@ export class SightedController {
     const userId = req.user.id;
     return this.sightedService.registerSighting(dto.pokemonId, dto.region, userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  getSightings(@Request() req) {
+   const userId = req.user.id;
+   return this.sightedService.findAllByUser(userId);
+}
 }

@@ -19,4 +19,11 @@ export class SightedService {
 
     return this.sightedRepo.save(newSighting);
   }
+
+  async findAllByUser(userId: number) {
+    return this.sightedRepo.find({
+      where: { user: { id: userId } },
+      order: { sightedAt: 'DESC' },
+    });
+  }
 }
