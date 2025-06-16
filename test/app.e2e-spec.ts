@@ -224,6 +224,29 @@ describe('Auth (e2e)', () => {
     }
   });
 
+    it('/sightings (POST) - should register a Pokémon sighting for the authenticated user', async () => {
+    const loginResponse = await request(server)
+      .post('/auth/login')
+      .send({ username: 'testuser1', password: '123456' });
+
+    const token = loginResponse.body.access_token;
+
+    const response = await request(server)
+      .post('/sightings')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        pokemonId: 3, 
+        region: 'Kanto'
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('id');
+    expect(response.body).toHaveProperty('pokemonId', 3);
+    expect(response.body).toHaveProperty('region', 'Kanto');
+    expect(response.body).toHaveProperty('sightedAt');
+    expect(response.body.user).toHaveProperty('id');
+  });
+
 
 
 });
