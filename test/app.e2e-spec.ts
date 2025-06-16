@@ -205,5 +205,25 @@ describe('Auth (e2e)', () => {
   expect(captureResponse.body.user).toHaveProperty('id');
 });
 
+  it('/captured (GET) - should return captured pokémons for the authenticated user', async () => {
+    const loginResponse = await request(server)
+      .post('/auth/login')
+      .send({ username: 'testuser1', password: '123456' });
+
+    const token = loginResponse.body.access_token;
+
+    const response = await request(server)
+      .get('/captured')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    if (response.body.length > 0) {
+      expect(response.body[0]).toHaveProperty('pokemonId');
+      expect(response.body[0]).toHaveProperty('capturedAt');
+    }
+  });
+
+
 
 });
