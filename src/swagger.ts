@@ -3,8 +3,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('JWT Auth API')
-    .setDescription('API with JWT authentication + refresh token')
+    .setTitle('Pokémon Project API')
+    .setDescription('REST API for managing Pokémon sightings, captures, and external PokéAPI integration. Includes JWT authentication with refresh tokens.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
