@@ -275,13 +275,44 @@ describe('Auth (e2e)', () => {
   it('should return a paginated list of pokémons', async () => {
     const response = await request(app.getHttpServer())
       .get('/pokemons?limit=10&offset=0')
-      
+
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('results');
     expect(Array.isArray(response.body.results)).toBe(true);
     expect(response.body.results.length).toBeGreaterThan(0);
     expect(response.body.results[0]).toHaveProperty('name');
     expect(response.body.results[0]).toHaveProperty('url');
+  });
+});
+
+describe('/pokemons/:id (GET)', () => {
+  it('should return details of a specific pokémon by ID', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/pokemons/1'); 
+      
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('name');
+    expect(response.body).toHaveProperty('id', 1);
+    expect(response.body).toHaveProperty('types');
+    expect(Array.isArray(response.body.types)).toBe(true);
+  });
+
+  it('should return details of a specific pokémon by name', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/pokemons/pikachu');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('name', 'pikachu');
+    expect(response.body).toHaveProperty('id');
+    expect(response.body).toHaveProperty('types');
+    expect(Array.isArray(response.body.types)).toBe(true);
+  });
+
+  it('should return 404 for non-existent pokémon', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/pokemons/unknownmon');
+
+    expect(response.status).toBe(404);
   });
 });
 
