@@ -271,5 +271,19 @@ describe('Auth (e2e)', () => {
     }
   });
 
+  describe('/pokemons (GET)', () => {
+  it('should return a paginated list of pokémons', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/pokemons?limit=10&offset=0')
+      
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('results');
+    expect(Array.isArray(response.body.results)).toBe(true);
+    expect(response.body.results.length).toBeGreaterThan(0);
+    expect(response.body.results[0]).toHaveProperty('name');
+    expect(response.body.results[0]).toHaveProperty('url');
+  });
+});
+
 
 });

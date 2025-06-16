@@ -27,4 +27,6 @@ export class SightedService {
       order: { sightedAt: 'DESC' },
     });
   }
+
+  
 }
