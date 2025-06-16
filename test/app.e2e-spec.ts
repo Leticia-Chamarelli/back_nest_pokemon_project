@@ -31,7 +31,7 @@ describe('Auth (e2e)', () => {
     const response = await request(server)
       .post('/auth/login')
       .send({
-        username: 'testuser2',
+        username: 'testuser1',
         password: '123456',
       })
       .expect(201);
@@ -61,7 +61,7 @@ describe('Auth (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(response.body.user).toHaveProperty('username', 'testuser2');
+    expect(response.body.user).toHaveProperty('username', 'testuser1');
   });
 
   it('should fail to access protected route without token', async () => {
@@ -110,7 +110,7 @@ describe('Auth (e2e)', () => {
   it('should not allow reuse of an invalidated refresh token', async () => {
     const loginResponse = await request(server)
       .post('/auth/login')
-      .send({ username: 'testuser2', password: '123456' })
+      .send({ username: 'testuser1', password: '123456' })
       .expect(201);
 
     const refreshToken = loginResponse.body.refresh_token;
@@ -129,7 +129,7 @@ describe('Auth (e2e)', () => {
   });
 
   it('should fail to access protected route with expired access token', async () => {
-    const payload = { username: 'testuser2', sub: 2 };
+    const payload = { username: 'testuser1', sub: 2 };
 
     const shortLivedToken = jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
@@ -167,7 +167,7 @@ describe('Auth (e2e)', () => {
     expect(invalidResponse.status).toBe(401);
     expect(invalidResponse.body).toHaveProperty('message');
 
-    const payload = { username: 'testuser2', sub: 2 };
+    const payload = { username: 'testuser1', sub: 2 };
     const expiredRefreshToken = app
       .get(JwtService)
       .sign(payload, {
@@ -184,5 +184,26 @@ describe('Auth (e2e)', () => {
     expect(expiredResponse.status).toBe(401);
     expect(expiredResponse.body).toHaveProperty('message');
   });
+
+  it('should capture a Pokémon for the authenticated user', async () => {
+  const loginResponse = await request(server)
+    .post('/auth/login')
+    .send({ username: 'testuser1', password: '123456' })
+    .expect(201);
+
+  const token = loginResponse.body.access_token;
+
+  const captureResponse = await request(server)
+    .post('/captured')
+    .set('Authorization', `Bearer ${token}`)
+    .send({ pokemonId: 25 }) 
+    .expect(201);
+
+  expect(captureResponse.body).toHaveProperty('id');
+  expect(captureResponse.body).toHaveProperty('pokemonId', 25);
+  expect(captureResponse.body).toHaveProperty('user');
+  expect(captureResponse.body.user).toHaveProperty('id');
+});
+
 
 });
