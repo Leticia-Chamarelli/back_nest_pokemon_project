@@ -23,6 +23,7 @@ export class SightedService {
   async findAllByUser(userId: number) {
     return this.sightedRepo.find({
       where: { user: { id: userId } },
+      relations: ['user'],
       order: { sightedAt: 'DESC' },
     });
   }
