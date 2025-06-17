@@ -1,0 +1,667 @@
+{
+	"info": {
+		"_postman_id": "8ba46425-8c54-40f1-b11e-a94679a84d4e",
+		"name": "back_nest_pokemon_project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25670923"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user by id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"updatetestuser1\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "register user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testuser4\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required fields - access_token and refresh_token\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData).to.have.property('access_token');\r",
+									"  pm.expect(responseData).to.have.property('refresh_token');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Access token is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.access_token).to.be.a('string').and.to.have.length.above(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Refresh token is a non-empty string\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData.refresh_token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Refresh token should not be empty\");\r",
+									"});\r",
+									"\r",
+									"// Save tokens to environment variables for later use\r",
+									"const json = pm.response.json();\r",
+									"pm.environment.set(\"accessToken\", json.access_token);\r",
+									"pm.environment.set(\"refreshToken\", json.refresh_token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testuser2\",\r\n  \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth profile route",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMiIsInN1YiI6MiwiaWF0IjoxNzQ4MzY4ODU4LCJleHAiOjE3NDgzNjk3NTh9.TMLPEDYfZiC7FQomIAlKex1wJHwnXSrQF3sJkoetOb4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required fields\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.access_token).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Access token is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"\r",
+									"  pm.expect(responseData.access_token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Access token should not be empty\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 300ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"const json = pm.response.json();\r",
+									"if (json.access_token) {\r",
+									"  pm.environment.set(\"accessToken\", json.access_token);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMiIsInN1YiI6MiwiaWF0IjoxNzQ4MzY4ODU4LCJleHAiOjE3NDg5NzM2NTh9.jkDUztOcAZ9-5Sty8RSSZAVEwG0JDxaTheluuFQSYds\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth profile route (access token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields - user, userId, and username\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.user).to.exist.and.to.be.an('object');\r",
+									"    pm.expect(responseData.user.userId).to.exist;\r",
+									"    pm.expect(responseData.user.username).to.exist;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMiIsInN1YiI6MiwiaWF0IjoxNzQ4MzY4ODU4LCJleHAiOjE3NDgzNjk3NTh9.TMLPEDYfZiC7FQomIAlKex1wJHwnXSrQF3sJkoetOb4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMiIsInN1YiI6MiwiaWF0IjoxNzQ4MzY4ODU4LCJleHAiOjE3NDgzNjk3NTh9.TMLPEDYfZiC7FQomIAlKex1wJHwnXSrQF3sJkoetOb4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PokéAPI",
+			"item": [
+				{
+					"name": "List all Pokémons (default pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokemons",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokemons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Pokémons with pagination (limit & offset)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokemons?limit=10&offset=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokemons"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "offset",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pokémon by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokemons/25",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokemons",
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Pokémons (with pagination)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTMwODY4LCJleHAiOjE3NDk5MzE3Njh9.gxVFYp_Rdr9Nu8cG8Ve15oT4gyujVa6PAAvz3JbkKAU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokemons",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokemons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pokémon by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokemons/pikachu",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokemons",
+								"pikachu"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sighted Pokémon",
+			"item": [
+				{
+					"name": "Sighted Pokémons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTMwMzc5LCJleHAiOjE3NDk5MzEyNzl9.86L5oBgRuP69RPeLSMcn0QNbXevGNYsb5nWn5WG745M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pokemonId\": 10,\r\n  \"region\": \"Kanto\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/sightings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Sighted Pokémons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTMwNDE2LCJleHAiOjE3NDk5MzEzMTZ9.j7RzrTiqgyNLfyI6AYrZ2OruY03F5572gcU8uS7FLDY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/sightings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Captured Pokémon",
+			"item": [
+				{
+					"name": "List all captured Pokémons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTI4NjcxLCJleHAiOjE3NDk5Mjk1NzF9.kdf_ByLih1pbLvkhLrRhKxRmgPpsbXS0NArh3GTvscg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/captured",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"captured"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Captured Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5ODQ0NzYzLCJleHAiOjE3NDk4NDU2NjN9.aRfpYZgeS-cT6W-o7oEpzvDV64qcfnXDqEY2EyolTiM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pokemonId\": 25\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/captured",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"captured"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
