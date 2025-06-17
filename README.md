@@ -39,7 +39,7 @@ API RESTful completa desenvolvida com [NestJS](https://nestjs.com/), JWT (access
 
 ## 🚀 Como rodar localmente
 
-1. **Clone o repositório**␣
+1. **Clone o repositório**
 
 ```bash
 git clone https://github.com/Leticia-Chamarelli/back_nest_pokemon_project
@@ -72,7 +72,7 @@ npm run start:dev
 
 ## ⚙️ Variáveis de ambiente
 
-Crie um arquivo `.env` com base no `.env.example`:
+Consulte o `.env.example` para as chaves necessárias e crie seu `.env`:
 
 ```bash
 # JWT
@@ -92,7 +92,7 @@ DB_NAME=back_nest_pokemon
 | Comando               | Descrição                             |
 |-----------------------|---------------------------------------|
 | `npm run start:dev`   | Inicia o servidor em modo dev         |
-| `npm run test`        | Eexecuta os testes unitários          |
+| `npm run test`        | Executa os testes unitários           |
 | `npm run test:e2e`    | Executa os testes de integração e2e   |
 | `npm run build`       | Compila o projeto para produção       |
 | `npm run start:prod`  | Inicia a versão buildada              |
@@ -141,7 +141,7 @@ Rotas disponíveis:
 📋 Listagem de Pokémons
 - GET /pokemon – Lista com paginação padrão
 
-- GET /pokemon/paginated?limit=20&offset=0 – Lista com paginação customizada
+- GET /pokemon/paginated?limit=20&offset=0 – Lista com paginação personalizada
 
 - GET /pokemon/:id – Busca por ID
 
@@ -159,7 +159,7 @@ Rotas disponíveis:
 
 
 ## 📬 Testes via Postman
-Você pode importar a collection do Postman que está incluída no projeto em `back_nest_pokemon_project.postman_collection.json`
+Você pode importar a collection do Postman que está fornecida no arquivo `back_nest_pokemon_project.postman_collection.json`
 
 ### Como usar:
 - Abra o Postman
@@ -168,7 +168,7 @@ Você pode importar a collection do Postman que está incluída no projeto em `b
 
 - Selecione o arquivo `back_nest_pokemon_project.postman_collection.json`
 
-- A collection será importada com todos os endpoints já configurados para teste.
+- A collection contém todos os endpoints prontos para uso com exemplos de requisição.
 
 - Atualize a variável de ambiente para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
 
