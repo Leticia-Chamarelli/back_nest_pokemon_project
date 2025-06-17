@@ -139,23 +139,23 @@ A aplicação se conecta à PokéAPI para listar e interagir com Pokémon reais.
 Rotas disponíveis:
 
 📋 Listagem de Pokémons
-GET /pokemon – Lista com paginação padrão
+- GET /pokemon – Lista com paginação padrão
 
-GET /pokemon/paginated?limit=20&offset=0 – Lista com paginação customizada
+- GET /pokemon/paginated?limit=20&offset=0 – Lista com paginação customizada
 
-GET /pokemon/:id – Busca por ID
+- GET /pokemon/:id – Busca por ID
 
-GET /pokemon/name/:name – Busca por nome
+- GET /pokemon/name/:name – Busca por nome
 
 🎯 Capturas
-POST /captured – Captura um Pokémon (com nome e ID)
+- POST /captured – Captura um Pokémon (com nome e ID)
 
-GET /captured – Lista todos os Pokémon capturados do usuário
+- GET /captured – Lista todos os Pokémon capturados do usuário
 
 👀 Avistamentos
-POST /sighted – Registra um Pokémon avistado
+- POST /sighted – Registra um Pokémon avistado
 
-GET /sighted – Lista todos os Pokémon avistados
+- GET /sighted – Lista todos os Pokémon avistados
 
 
 ## 📬 Testes via Postman
@@ -188,11 +188,17 @@ Inclui:
 
 ## 🛡️ Checklist de segurança
 ✅ JWT com expiração curta
+
 ✅ Refresh token seguro e hasheado no DB
+
 ✅ Logout revoga refresh token
+
 ✅ Middleware com guards para rotas protegidas
+
 ✅ Senhas com hash (BCrypt)
+
 ✅ Variáveis sensíveis no .env
+
 ✅ Nada sensível versionado
 
 ## 🏛️ Arquitetura
