@@ -1,6 +1,6 @@
-# 🔐 NestJS Auth API with JWT & Refresh Token
+# 🧩 NestJS Pokémon API com Autenticação JWT + PokéAPI
 
-Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/), utilizando tokens JWT e refresh tokens com revogação real, escrita com foco em segurança, testes e boas práticas.
+Uma API RESTful completa desenvolvida com [NestJS](https://nestjs.com/), com sistema de autenticação robusto via JWT + refresh token, integração com a PokéAPI para capturas, avistamentos e listagens de Pokémon, testes automatizados e foco em segurança e boas práticas.
 
 ---
 
@@ -12,11 +12,13 @@ Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/)
 - [📜 Scripts disponíveis](#-scripts-disponíveis)
 - [🧪 Testes e2e](#-testes-e2e)
 - [🔁 Fluxo de autenticação](#-fluxo-de-autenticação)
+- [🔎 Funcionalidades da PokéAPI](#-funcionalidades-da-pokéapi)
 - [📬 Testes via Postman](#-testes-via-postman)
 - [🧾 Documentação Swagger](#-documentação-swagger)
 - [🛡️ Checklist de segurança](#️-checklist-de-segurança)
 - [🏛️ Arquitetura](#-arquitetura)
 - [☁️ Deploy e Produção](#️-deploy-e-produção)
+- [🔗 Integrações Futuras](#-integrações-futuras)
 
 ---
 
@@ -27,21 +29,22 @@ Uma API de autenticação robusta desenvolvida com [NestJS](https://nestjs.com/)
 - [PostgreSQL](https://www.postgresql.org/) (via [DBeaver](https://dbeaver.io/))
 - [TypeORM](https://typeorm.io/)
 - [dotenv](https://www.npmjs.com/package/dotenv)
+- [HttpModule (PokéAPI)](https://docs.nestjs.com/techniques/http-module)
 - [Supertest](https://www.npmjs.com/package/supertest)
 - [Jest](https://jestjs.io/)
 - [Swagger (OpenAPI)](https://swagger.io/)
 
-
 ---
+
 
 ## 🚀 Como rodar localmente
 
 1. **Clone o repositório**␣
 
 ```bash
-git clone https://github.com/seu-usuario/nest-auth-jwt.git
+git clone https://github.com/Leticia-Chamarelli/back_nest_pokemon_project
 
-cd nest-auth-jwt
+cd back_nest_pokemon_project
 ```
 
 2. **Instale as dependências**
@@ -81,7 +84,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=your_password_here
-DB_NAME=back_nest_auth
+DB_NAME=back_nest_pokemon
 ```
 
 ## 📜 Scripts disponíveis
@@ -96,21 +99,21 @@ DB_NAME=back_nest_auth
 
 
 ## 🧪 Testes e2e
-Utiliza o supertest para simular o fluxo real de login, refresh, acesso e logout.
+Fluxo de testes com supertest, incluindo:
+
+- Login, refresh e logout
+
+- Acesso a rota protegida
+
+- Captura de Pokémon
+
+- Avistamentos de Pokémon
+
+- Listagens com paginação, por nome ou ID
 
 ```bash
 npm run test:e2e
 ```
-
-Casos cobertos:
-
-- Login com credenciais válidas e inválidas
-
--  Acesso à rota protegida com/sem token
-
-- Refresh token válido, expirado ou revogado
-
-- Logout invalida o refresh token
 
 ## 🔁 Fluxo de autenticação
 1. POST /auth/register  
@@ -130,20 +133,44 @@ Casos cobertos:
 5. POST /auth/logout  
    → Refresh_token revogado
 
+## 🔎 Funcionalidades da PokéAPI
+A aplicação se conecta à PokéAPI para listar e interagir com Pokémon reais.
+
+Rotas disponíveis:
+
+📋 Listagem de Pokémons
+GET /pokemon – Lista com paginação padrão
+
+GET /pokemon/paginated?limit=20&offset=0 – Lista com paginação customizada
+
+GET /pokemon/:id – Busca por ID
+
+GET /pokemon/name/:name – Busca por nome
+
+🎯 Capturas
+POST /captured – Captura um Pokémon (com nome e ID)
+
+GET /captured – Lista todos os Pokémon capturados do usuário
+
+👀 Avistamentos
+POST /sighted – Registra um Pokémon avistado
+
+GET /sighted – Lista todos os Pokémon avistados
+
 
 ## 📬 Testes via Postman
-Você pode importar a collection do Postman que está incluída no projeto em `/docs/back_nest_auth.postman_collection.json`
+Você pode importar a collection do Postman que está incluída no projeto em `back_nest_pokemon_project.postman_collection.json`
 
 ### Como usar:
 - Abra o Postman
 
 - Clique em Import → Upload Files.
 
-- Selecione o arquivo `/docs/back_nest_auth.postman_collection.json`
+- Selecione o arquivo `back_nest_pokemon_project.postman_collection.json`
 
 - A collection será importada com todos os endpoints já configurados para teste.
 
-- Atualize a variável de ambiente (se houver) para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
+- Atualize a variável de ambiente para ajustar a URL base do seu servidor local (ex: http://localhost:3000).
 
 Assim, você pode testar todas as rotas rapidamente com exemplos prontos.
 
@@ -153,28 +180,20 @@ http://localhost:3000/api
 
 Inclui:
 
-- Todas as rotas disponíveis
+- Endpoints de autenticação
 
-- Parâmetros e tipos de dados
+- Endpoints Pokémon
 
-- Códigos de status esperados
-
-- Descrições e exemplos úteis
+- Modelos, tipos, descrições e respostas esperadas
 
 ## 🛡️ Checklist de segurança
+✅ JWT com expiração curta
+✅ Refresh token seguro e hasheado no DB
+✅ Logout revoga refresh token
+✅ Middleware com guards para rotas protegidas
 ✅ Senhas com hash (BCrypt)
-
-✅ Refresh tokens também são hasheados
-
-✅ Tokens com expiração curta (access) e longa (refresh)
-
-✅ Logout revoga o refresh
-
-✅ Middleware protege rotas privadas
-
-✅ Variáveis sensíveis fora do código (.env)
-
-✅ Nenhum segredo commitado
+✅ Variáveis sensíveis no .env
+✅ Nada sensível versionado
 
 ## 🏛️ Arquitetura
 ```bash
@@ -243,14 +262,6 @@ Inclui:
 - node_modules/
 ```
 
-## 🔐 Estratégia de autenticação:
-
-- JWT (Access token curto)
-
-- Refresh token armazenado hasheado no DB
-
-- Guard com Passport verifica token JWT
-
 ## ☁️ Deploy e Produção
 Este projeto está configurado para deploy na plataforma Render, que oferece hospedagem simples para aplicações Node.js.
 
@@ -281,7 +292,7 @@ Este projeto está configurado para deploy na plataforma Render, que oferece hos
 
 4. Banco de dados
 
-- A aplicação foi migrada de MySQL para PostgreSQL para compatibilidade com o ambiente do Render.
+- A aplicação foi feita PostgreSQL para compatibilidade com o ambiente do Render.
 
 - Você pode usar o banco de dados PostgreSQL oferecido pelo próprio Render ou outro serviço externo.
 
@@ -310,6 +321,11 @@ https://back-nest-auth.onrender.com/auth/login
 - Caso receba erro 404, verifique as rotas e a configuração da aplicação.
 
 ## 🧩  Integrações futuras
+ - Frontend completo com Next.js
 
-Este projeto foi desenvolvido como base para integração com um frontend (ex: Next.js) e consumo de APIs externas (ex: PokeAPI).
+- Visualização de capturas, avistamentos e login pelo frontend
+
+- Conexão ao backend via API REST
+
+- Integração total com a PokéAPI
 
