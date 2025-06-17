@@ -1,6 +1,6 @@
-# 🧩 NestJS Pokémon API com Autenticação JWT + PokéAPI
+# 🧩 NestJS Pokémon API com JWT Auth e integração com PokéAPI
 
-Uma API RESTful completa desenvolvida com [NestJS](https://nestjs.com/), com sistema de autenticação robusto via JWT + refresh token, integração com a PokéAPI para capturas, avistamentos e listagens de Pokémon, testes automatizados e foco em segurança e boas práticas.
+API RESTful completa desenvolvida com [NestJS](https://nestjs.com/), JWT (access e refresh tokens), PostgreSQL e integração com a PokéAPI para capturas, avistamentos e listagens de Pokémon. Inclui testes automatizados, documentação Swagger e arquitetura escalável.
 
 ---
 
@@ -52,7 +52,7 @@ cd back_nest_pokemon_project
 npm install
 ```
 
-3. **Configure seu `.env`**
+3. **Configure seu arquivo `.env`**
 
    Crie um arquivo `.env` com base no arquivo `.env.example`.
 
@@ -62,7 +62,7 @@ npm install
    Use o DBeaver ou outro cliente para:
    - Criar o banco de dados; e
 
-   - Rodar as migrations, se houver.
+   - Rodar as migrations, se necessário.
 
  
 5. **Inicie o projeto**
@@ -92,8 +92,8 @@ DB_NAME=back_nest_pokemon
 | Comando               | Descrição                             |
 |-----------------------|---------------------------------------|
 | `npm run start:dev`   | Inicia o servidor em modo dev         |
-| `npm run test`        | Roda os testes unitários              |
-| `npm run test:e2e`    | Roda os testes de integração e2e      |
+| `npm run test`        | Eexecuta os testes unitários          |
+| `npm run test:e2e`    | Executa os testes de integração e2e   |
 | `npm run build`       | Compila o projeto para produção       |
 | `npm run start:prod`  | Inicia a versão buildada              |
 
@@ -175,8 +175,7 @@ Você pode importar a collection do Postman que está incluída no projeto em `b
 Assim, você pode testar todas as rotas rapidamente com exemplos prontos.
 
 ## 🧾 Documentação Swagger
-Acesse em tempo de execução:
-http://localhost:3000/api
+Ao rodar localmente, acesse [http://localhost:3000/api](http://localhost:3000/api) para visualizar a documentação interativa da API.
 
 Inclui:
 
@@ -185,6 +184,7 @@ Inclui:
 - Endpoints Pokémon
 
 - Modelos, tipos, descrições e respostas esperadas
+
 
 ## 🛡️ Checklist de segurança
 ✅ JWT com expiração curta
@@ -319,14 +319,14 @@ Este projeto está configurado para deploy na plataforma Render, que oferece hos
 
 4. Banco de dados
 
-- A aplicação foi feita PostgreSQL para compatibilidade com o ambiente do Render.
+- A aplicação foi feita com PostgreSQL, garantindo compatibilidade com o ambiente do Render.
 
 - Você pode usar o banco de dados PostgreSQL oferecido pelo próprio Render ou outro serviço externo.
 
 - Configure as variáveis do banco no painel do Render.
 
 5. Adaptação da aplicação para a porta do Render
-no `seu main.ts`, certifique-se que a aplicação escute a porta da variável de ambiente PORT, assim:
+No seu arquivo `main.ts`, certifique-se que a aplicação escute a porta da variável de ambiente PORT, assim:
 
 ```bash
 const port = process.env.PORT || 3000;
