@@ -203,10 +203,11 @@ Inclui:
 
 ## 🏛️ Arquitetura
 ```bash
+📁 .vscode
+│   └── settings.json
+│
 📁 src
 │
-├── 📁 .vscode
-│   └── settings.json
 ├── 📁 auth
 │   ├── 📁 dto
 │   │   ├── login.dto.ts
@@ -217,7 +218,7 @@ Inclui:
 │   ├── auth.controller.ts
 │   ├── auth.module.ts
 │   ├── auth.service.spec.ts
-│   ├── auth.service.ts
+│   └── auth.service.ts
 │
 ├── 📁 common
 │   ├── 📁 filters
@@ -228,7 +229,27 @@ Inclui:
 │       └── request-with-user.interface.ts
 │
 ├── 📁 migrations
-│   └── [timestamp]-AddRefreshTokenToUser.ts
+│   └── [timestamp]-YourMigrationName.ts
+│
+├── 📁 pokeapi
+│   ├── 📁 dto
+│   │   └── pokemon-query.dto
+│   ├── pokeapi.controller.ts
+│   ├── pokeapi.module.ts
+│   └── pokeapi.service.ts
+│
+├── 📁 pokemons
+│   ├── 📁 dto
+│   │   ├── create-captured.dto.ts
+│   │   ├── create-sighted.dto.ts
+│   │   └── list-pokemon.dto.ts
+│   ├── captured-pokemon.entity.ts
+│   ├── captured.controller.ts
+│   ├── captured.service.ts
+│   ├── pokemons.module.ts
+│   ├── sighted-pokemon.entity.ts
+│   ├── sighted.controller.ts
+│   └── sighted.service.ts
 │
 ├── 📁 users
 │   ├── user.entity.ts
@@ -250,7 +271,7 @@ Inclui:
 📄 .env.example
 📄 .gitignore
 📄 .prettierrc
-📄 back_nest_auth.postman_collection.json
+📄 back_nest_pokemon_project.postman_collection.json
 📄 data-source.ts
 📄 eslint.config.mjs
 📄 nest-cli.json
