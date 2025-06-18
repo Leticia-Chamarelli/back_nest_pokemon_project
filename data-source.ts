@@ -18,4 +18,7 @@ export const AppDataSource = new DataSource({
     process.env.NODE_ENV === 'production' ? 'dist/migrations/*.js' : 'src/migrations/*.ts',
   ],
   synchronize: false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
