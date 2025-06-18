@@ -289,65 +289,60 @@ Inclui:
 - node_modules/
 ```
 
-## ☁️ Deploy e Produção
-Este projeto está configurado para deploy na plataforma Render, que oferece hospedagem simples para aplicações Node.js.
+## ☁️ Deploy e Produção  
+Este projeto está configurado para deploy na plataforma **Render**, que oferece hospedagem gratuita e simples para aplicações Node.js.
 
-### Passos para deploy no Render:
+### ✅ Passos para deploy no Render:
 
-1. Configurar repositório Git
+1. **Configure o repositório Git**  
+   Certifique-se de que o código está versionado e hospedado no GitHub (ou outro serviço suportado).
 
-- Certifique-se que seu código esteja versionado e no GitHub (ou outro repositório suportado).
+2. **Crie um novo Web Service no Render**  
+   - Escolha o repositório da API NestJS.  
+   - Configure o ambiente como **Node.js**.  
+   - O Render define automaticamente a variável de ambiente `PORT`.  
+   - A aplicação já está pronta para usá-la (ver passo 5).
 
-2. Criar um novo Web Service no Render
+3. **Adicione variáveis de ambiente no painel da Render**  
+   Inclua todas as variáveis do seu `.env`, como:
 
-- Escolha o repositório da API NestJS.
+   - `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`  
+   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
 
-- Configure o ambiente para Node.js.
+4. **Configure o banco de dados**  
+   - Use o PostgreSQL do próprio Render ou outro serviço externo.  
+   - Certifique-se de que as credenciais estejam corretas no painel de variáveis.  
 
-- Configure a porta da aplicação (por padrão, Render define a variável PORT, que sua aplicação deve respeitar).
+5. **Ajuste da porta para produção**  
+   O arquivo `main.ts` já está configurado corretamente:
 
-- Ajuste a variável PORT no NestJS para usar process.env.PORT (exemplo abaixo).
+   ```ts
+   await app.listen(process.env.PORT || 3000);
 
-3. Configurar variáveis de ambiente no Render
-- Adicione todas as variáveis .env necessárias, incluindo:
+6. **Deploy automático ou manual**
 
-- `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME` para PostgreSQL
+- O Render pode fazer deploy automático a cada push na branch principal.
 
-- `JWT_SECRET`, `JWT_REFRESH_SECRET`
+- Ou você pode fazer deploy manual clicando em “Manual Deploy” no painel.
 
-- `PORT` (se necessário)
+### 🔍 Testes pós-deploy
 
-4. Banco de dados
+- Todas as rotas da API podem ser testadas via **Postman** usando a URL pública do Render:  
+  👉 [https://back-nest-pokemon-project.onrender.com](https://back-nest-pokemon-project.onrender.com)
 
-- A aplicação foi feita com PostgreSQL, garantindo compatibilidade com o ambiente do Render.
+- Exemplo de rota de autenticação (POST login):  
+  [https://back-nest-pokemon-project.onrender.com/auth/login](https://back-nest-pokemon-project.onrender.com/auth/login)
 
-- Você pode usar o banco de dados PostgreSQL oferecido pelo próprio Render ou outro serviço externo.
+- O endpoint raiz `/` retorna uma mensagem simples para verificar que a API está no ar:  
+  [https://back-nest-pokemon-project.onrender.com](https://back-nest-pokemon-project.onrender.com)
 
-- Configure as variáveis do banco no painel do Render.
+- ⚠️ Se você receber erro `404`, verifique:
+  - Se está utilizando o **método HTTP correto** (ex: POST para `/auth/login`);
+  - Se a URL corresponde exatamente à rota da documentação;
+  - Se o deploy terminou com sucesso no painel do Render.
 
-5. Adaptação da aplicação para a porta do Render
-No seu arquivo `main.ts`, certifique-se que a aplicação escute a porta da variável de ambiente PORT, assim:
 
-```bash
-const port = process.env.PORT || 3000;
-await app.listen(port);
-```
-
-6. Deploy automático ou manual
-
-- O Render pode disparar deploy automático a cada push na branch principal.
-
-- Ou você pode fazer deploy manual via painel.
-
-### Testes pós-deploy
-- As rotas da API podem ser testadas via Postman usando a URL pública fornecida pelo Render, por exemplo:
-https://back-nest-pokemon-project.onrender.com/auth/login
-
-- O endpoint raiz / (https://back-nest-pokemon-project.onrender.com) retorna uma mensagem simples para verificar que a API está no ar.
-
-- Caso receba erro 404, verifique as rotas e a configuração da aplicação.
-
-## 🧩  Integrações futuras
+## 🔗  Integrações futuras
  - Frontend completo com Next.js
 
 - Visualização de capturas, avistamentos e login pelo frontend
