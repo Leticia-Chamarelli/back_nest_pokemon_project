@@ -341,9 +341,9 @@ await app.listen(port);
 
 ### Testes pós-deploy
 - As rotas da API podem ser testadas via Postman usando a URL pública fornecida pelo Render, por exemplo:
-https://back-nest-auth.onrender.com/auth/login
+https://back-nest-pokemon-project.onrender.com/auth/login
 
-- O endpoint raiz [/](https://back-nest-auth.onrender.com/) retorna uma mensagem simples para verificar que a API está no ar.
+- O endpoint raiz [/](https://back-nest-pokemon-project.onrender.com) retorna uma mensagem simples para verificar que a API está no ar.
 
 - Caso receba erro 404, verifique as rotas e a configuração da aplicação.
 
