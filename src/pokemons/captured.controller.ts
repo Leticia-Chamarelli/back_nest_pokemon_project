@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CapturedService } from './captured.service';
 import { CreateCapturedDto } from './dto/create-captured.dto';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Captured')
