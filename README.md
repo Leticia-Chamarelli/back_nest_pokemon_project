@@ -62,9 +62,12 @@ npm install
    Use o DBeaver ou outro cliente para:
    - Criar o banco de dados; e
 
-   - Rodar as migrations, se necessário.
+   - Rodar as migrations para criar as tabelas necessárias (recomendado sempre que houver mudanças no esquema). Para isso, execute:
 
- 
+   ```bash
+   npm run migration:run
+    ```
+
 5. **Inicie o projeto**
 ```bash
 npm run start:dev
@@ -318,6 +321,7 @@ Este projeto está configurado para deploy na plataforma **Render**, que oferece
 
    ```ts
    await app.listen(process.env.PORT || 3000);
+    ```
 
 6. **Deploy automático ou manual**
 
