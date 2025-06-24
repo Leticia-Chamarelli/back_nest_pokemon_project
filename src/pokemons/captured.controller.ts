@@ -17,7 +17,7 @@ export class CapturedController {
   @ApiResponse({ status: 201, description: 'Pokémon captured successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   capture(@Body() dto: CreateCapturedDto, @Request() req: { user: User }) {
-    return this.capturedService.capture(dto.pokemonId, req.user);
+    return this.capturedService.capture(dto.pokemonId, dto.region, req.user);
   }
 
   @Get()

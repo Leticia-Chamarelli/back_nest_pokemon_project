@@ -11,9 +11,10 @@ export class CapturedService {
     private capturedRepo: Repository<CapturedPokemon>,
   ) {}
 
-  async capture(pokemonId: number, user: User) {
+  async capture(pokemonId: number, region: string, user: User) {
     const newCapture = this.capturedRepo.create({
       pokemonId,
+      region,
       user,
     });
 
