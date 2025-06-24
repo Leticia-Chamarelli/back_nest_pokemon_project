@@ -24,27 +24,31 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+ async login(user: any) {
+  const payload = { username: user.username, sub: user.id };
 
-    const access_token = this.jwtService.sign(payload, {
-      expiresIn: '15m',
-      secret: process.env.JWT_SECRET,
-    });
+  const access_token = this.jwtService.sign(payload, {
+    expiresIn: '15m',
+    secret: process.env.JWT_SECRET,
+  });
 
-    const refresh_token = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-      secret: process.env.JWT_REFRESH_SECRET,
-    });
+  const refresh_token = this.jwtService.sign(payload, {
+    expiresIn: '7d',
+    secret: process.env.JWT_REFRESH_SECRET,
+  });
 
-    const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
-    await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
+  const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
+  await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
 
-    return {
-      access_token,
-      refresh_token,
-    };
-  }
+  return {
+    access_token,
+    refresh_token,
+    user: {
+      id: user.id,
+      username: user.username,
+    },
+  };
+}
 
   async refreshToken(refresh_token: string) {
     try {

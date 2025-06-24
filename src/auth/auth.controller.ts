@@ -91,8 +91,12 @@ export class AuthController {
     description: 'Login successful',
     schema: {
       example: {
-        accessToken: 'access_token_example',
-        refreshToken: 'refresh_token_example',
+        access_token: 'access_token_example',
+        refresh_token: 'refresh_token_example',
+        user: {
+          id: 1,
+          username: 'exampleUser',
+        },
       },
     },
   })
@@ -130,7 +134,8 @@ export class AuthController {
     description: 'Access token refreshed',
     schema: {
       example: {
-        accessToken: 'new_access_token_example',
+        access_token: 'new_access_token_example',
+        refresh_token: 'new_refresh_token_example',
       },
     },
   })
