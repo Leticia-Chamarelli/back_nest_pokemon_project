@@ -3,21 +3,41 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CapturedPokemon } from './captured-pokemon.entity';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
-import { PokeapiService } from '../pokeapi/pokeapi.service'; 
+import { PokeapiService } from '../pokeapi/pokeapi.service';
 
 @Injectable()
 export class CapturedService {
   constructor(
     @InjectRepository(CapturedPokemon)
     private capturedRepo: Repository<CapturedPokemon>,
-    private readonly pokeapiService: PokeapiService, 
+    private readonly pokeapiService: PokeapiService,
   ) {}
 
-  async capture(pokemonId: number, region: string, user: User) {
+  async capture(
+    pokemonId: number,
+    region: string,
+    user: User,
+    level?: number,
+    nickname?: string,
+  ) {
+    const regionImageMap = {
+      Kanto: '/images/regions/kanto.png',
+      Johto: '/images/regions/johto.png',
+      Hoenn: '/images/regions/hoenn.png',
+      Sinnoh: '/images/regions/sinnoh.png',
+      Unova: '/images/regions/unova.png',
+      Kalos: '/images/regions/kalos.png',
+      Alola: '/images/regions/alola.png',
+      Galar: '/images/regions/galar.png',
+    };
+
     const newCapture = this.capturedRepo.create({
       pokemonId,
       region,
+      regionImage: regionImageMap[region] || '/images/regions/default.png',
       user,
+      level,
+      nickname,
     });
 
     return this.capturedRepo.save(newCapture);
@@ -45,7 +65,7 @@ export class CapturedService {
     return {
       ...capture,
       pokemonDetails,
-      regionImage: capture.regionImage, 
+      regionImage: capture.regionImage,
     };
   }
 }

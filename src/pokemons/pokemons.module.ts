@@ -7,8 +7,13 @@ import { SightedService } from './sighted.service';
 import { CapturedController } from './captured.controller';
 import { SightedController } from './sighted.controller';
 
+import { PokeapiModule } from '../pokeapi/pokeapi.module'; 
+
 @Module({
-  imports: [TypeOrmModule.forFeature([CapturedPokemon, SightedPokemon])],
+  imports: [
+    TypeOrmModule.forFeature([CapturedPokemon, SightedPokemon]),
+    PokeapiModule,
+  ],
   controllers: [CapturedController, SightedController],
   providers: [CapturedService, SightedService],
   exports: [TypeOrmModule],

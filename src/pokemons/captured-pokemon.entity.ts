@@ -15,16 +15,16 @@ export class CapturedPokemon {
   @Column()
   pokemonId: number;
 
-  @Column()
+  @Column({ nullable: true })
   region: string;
 
-  @Column()
+  @Column({ nullable: true })
   level: number;
 
   @Column({ nullable: true })
   nickname: string;
 
-  @Column()
+  @Column({ nullable: true })
   regionImage: string;
 
   @ManyToOne(() => User, (user) => user.capturedPokemons)
