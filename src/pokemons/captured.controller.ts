@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CapturedService } from './captured.service';
 import { CreateCapturedDto } from './dto/create-captured.dto';
@@ -26,5 +26,13 @@ export class CapturedController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   findAll(@Request() req: { user: User }) {
     return this.capturedService.findAllByUser(req.user);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get details of a specific captured Pokémon' })
+  @ApiResponse({ status: 200, description: 'Captured Pokémon details' })
+  @ApiResponse({ status: 404, description: 'Captured Pokémon not found' })
+  findOne(@Param('id') id: string, @Request() req: { user: User }) {
+    return this.capturedService.findOneByIdAndUser(+id, req.user);
   }
 }
