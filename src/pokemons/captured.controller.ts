@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CapturedService } from './captured.service';
 import { CreateCapturedDto } from './dto/create-captured.dto';
@@ -53,5 +53,13 @@ export class CapturedController {
     @Request() req: { user: User },
   ) {
     return this.capturedService.updateCaptured(+id, req.user, updateDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remove a captured Pokémon' })
+  @ApiResponse({ status: 200, description: 'Pokémon removed successfully' })
+  @ApiResponse({ status: 404, description: 'Captured Pokémon not found' })
+  remove(@Param('id') id: string, @Request() req: { user: User }) {
+    return this.capturedService.removeCaptured(+id, req.user);
   }
 }

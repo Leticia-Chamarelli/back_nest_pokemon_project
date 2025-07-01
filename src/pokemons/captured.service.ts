@@ -101,4 +101,17 @@ export class CapturedService {
 
     return this.capturedRepo.save(capture);
   }
+
+  async removeCaptured(id: number, user: User) {
+    const capture = await this.capturedRepo.findOne({
+      where: { id, user: { id: user.id } },
+    });
+
+    if (!capture) {
+      throw new NotFoundException(`Captured Pokémon with id ${id} not found.`);
+    }
+
+    await this.capturedRepo.remove(capture);
+    return { message: `Captured Pokémon with id ${id} removed successfully.` };
+  }
 }
