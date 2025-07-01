@@ -6,6 +6,8 @@ import { SightedPokemon } from './src/pokemons/sighted-pokemon.entity';
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST,
@@ -15,10 +17,10 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   entities: [User, CapturedPokemon, SightedPokemon],
   migrations: [
-    process.env.NODE_ENV === 'production' ? 'dist/migrations/*.js' : 'src/migrations/*.ts',
+    isProduction ? 'dist/migrations/*.js' : 'src/migrations/*.ts',
   ],
   synchronize: false,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ...(isProduction && {
+    ssl: { rejectUnauthorized: false },
+  }),
 });
