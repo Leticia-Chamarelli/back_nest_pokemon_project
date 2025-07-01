@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PokemonDetailDto {
+   @ApiProperty()
+  id: number;
+
   @ApiProperty({ example: 'Pikachu' })
   name: string;
 
