@@ -1,5 +1,10 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { PokeapiService } from './pokeapi.service';
 import { PokemonQueryDto } from './dto/pokemon-query.dto';
 
@@ -23,10 +28,10 @@ export class PokeapiController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a Pokémon by name or ID' })
-  @ApiResponse({ status: 200, description: 'Pokémon found' })
+  @ApiOperation({ summary: 'Get detailed info of a Pokémon by name or ID' })
+  @ApiResponse({ status: 200, description: 'Detailed Pokémon data' })
   @ApiResponse({ status: 404, description: 'Pokémon not found' })
-  async findOne(@Param('id') id: string) {
-    return this.pokeapiService.getPokemonByIdOrName(id);
+  async findOne(@Param('id') id: string | number) {
+    return this.pokeapiService.getPokemonDetails(Number(id));
   }
 }
