@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CapturedService } from './captured.service';
 import { CreateCapturedDto } from './dto/create-captured.dto';
+import { UpdateCapturedDto } from './dto/update-captured.dto'; 
 import { User } from '../users/user.entity';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -40,5 +41,17 @@ export class CapturedController {
   @ApiResponse({ status: 404, description: 'Captured Pokémon not found' })
   findOne(@Param('id') id: string, @Request() req: { user: User }) {
     return this.capturedService.findOneByIdAndUser(+id, req.user);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a captured Pokémon' })
+  @ApiResponse({ status: 200, description: 'Pokémon updated successfully' })
+  @ApiResponse({ status: 404, description: 'Captured Pokémon not found' })
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateCapturedDto,
+    @Request() req: { user: User },
+  ) {
+    return this.capturedService.updateCaptured(+id, req.user, updateDto);
   }
 }
