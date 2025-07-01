@@ -8,6 +8,8 @@ import { PokemonsModule } from './pokemons/pokemons.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,10 +21,12 @@ import { AppService } from './app.service';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV !== 'production',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      synchronize: !isProduction,
+      ...(isProduction && {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }),
     }),
     UsersModule,
     AuthModule,
