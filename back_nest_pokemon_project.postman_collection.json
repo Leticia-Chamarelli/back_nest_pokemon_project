@@ -109,7 +109,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"testuser4\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+							"raw": "{\r\n  \"username\": \"testuser1\",\r\n  \"password\": \"123456\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -182,7 +182,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"testuser2\",\r\n  \"password\": \"123456\"\r\n}",
+							"raw": "{\r\n  \"username\": \"testuser1\",\r\n  \"password\": \"123456\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -530,7 +530,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTMwMzc5LCJleHAiOjE3NDk5MzEyNzl9.86L5oBgRuP69RPeLSMcn0QNbXevGNYsb5nWn5WG745M",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1MTcwLCJleHAiOjE3NTE0NjYwNzB9.JL9hHCi5mHc6S137wqYkR9do7W-BCFU04fMbVUMUzcQ",
 									"type": "string"
 								}
 							]
@@ -539,7 +539,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"pokemonId\": 10,\r\n  \"region\": \"Kanto\"\r\n}\r\n",
+							"raw": "{\r\n  \"pokemonId\": 1,\r\n  \"region\": \"Kanto\",\r\n  \"level\": 5,\r\n  \"nickname\": \"Pokémon da Le\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -568,7 +568,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTMwNDE2LCJleHAiOjE3NDk5MzEzMTZ9.j7RzrTiqgyNLfyI6AYrZ2OruY03F5572gcU8uS7FLDY",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1MTcwLCJleHAiOjE3NTE0NjYwNzB9.JL9hHCi5mHc6S137wqYkR9do7W-BCFU04fMbVUMUzcQ",
 									"type": "string"
 								}
 							]
@@ -588,6 +588,134 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Sighted Pokémons by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1MTcwLCJleHAiOjE3NTE0NjYwNzB9.JL9hHCi5mHc6S137wqYkR9do7W-BCFU04fMbVUMUzcQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/sightings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update sighted Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1NDM3LCJleHAiOjE3NTE0NjYzMzd9.PH3NHY8pYjZelqHr1WRNw5vsqMtVVbqjzEN74nWI5UQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"region\": \"Johto\",\r\n  \"nickname\": \"Pokémon Atualizado\",\r\n  \"level\": 20\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/sightings/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete sighted Pkémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1NDk1LCJleHAiOjE3NTE0NjYzOTV9.fue_-azVIpE-7VY_Mbg0K5h9a3z0-lANGFFObYPzEwk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/sightings/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pokémon by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDY1MzMyLCJleHAiOjE3NTE0NjYyMzJ9.Gk6ELJ_r1Zu3S93sMU4nLEF3ysZmh5jGYYj1X8zr0_A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/sightings/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sightings",
+								"11"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -602,7 +730,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5OTI4NjcxLCJleHAiOjE3NDk5Mjk1NzF9.kdf_ByLih1pbLvkhLrRhKxRmgPpsbXS0NArh3GTvscg",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDA0NTY3LCJleHAiOjE3NTE0MDU0Njd9.grlmEg5hwPWEsYYxNAvB7H4FiKJjKxqvv4UxoPb8qm0",
 									"type": "string"
 								}
 							]
@@ -631,7 +759,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzQ5ODQ0NzYzLCJleHAiOjE3NDk4NDU2NjN9.aRfpYZgeS-cT6W-o7oEpzvDV64qcfnXDqEY2EyolTiM",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDA0NTY3LCJleHAiOjE3NTE0MDU0Njd9.grlmEg5hwPWEsYYxNAvB7H4FiKJjKxqvv4UxoPb8qm0",
 									"type": "string"
 								}
 							]
@@ -640,7 +768,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"pokemonId\": 25\r\n}\r\n",
+							"raw": "{\r\n  \"pokemonId\": 12,\r\n  \"region\": \"Kanto\",\r\n  \"level\": 1,\r\n  \"nickname\": \"Pokémon da Le\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -656,6 +784,496 @@
 							"port": "3000",
 							"path": [
 								"captured"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Captured Pokémon by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDA0NTY3LCJleHAiOjE3NTE0MDU0Njd9.grlmEg5hwPWEsYYxNAvB7H4FiKJjKxqvv4UxoPb8qm0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/captured/58",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"captured",
+								"58"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update captured Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDAzOTYxLCJleHAiOjE3NTE0MDQ4NjF9.fLyU6cmknO1jZ6KGBwXlDrOw0fEavMecccu5BlZtWjs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nickname\": \"Pikachu da Lê Atualizado\",\r\n  \"level\": 15,\r\n  \"region\": \"Johto\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/captured/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"captured",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete captured Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsInN1YiI6MSwiaWF0IjoxNzUxNDA0NTY3LCJleHAiOjE3NTE0MDU0Njd9.grlmEg5hwPWEsYYxNAvB7H4FiKJjKxqvv4UxoPb8qm0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/captured/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"captured",
+								"11"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pokémon API - Full Flow - Render Deploy Requests",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testeusuario3\",\r\n  \"password\": \"senha123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/auth/register",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testeusuario\",\r\n  \"password\": \"senha123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/auth/login",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sighted Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzExNzE1LCJleHAiOjE3NTEzMTI2MTV9.n3n8-0BrS8M9pkCffeh729LtDPODNJdeJu5yP7fcprI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pokemonId\": 25,\r\n  \"region\": \"Kanto\",\r\n  \"level\": 2,\r\n  \"nickname\": null,\r\n  \"regionImage\": null\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/sightings",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"sightings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List sighted Pokémons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzExNzE1LCJleHAiOjE3NTEzMTI2MTV9.n3n8-0BrS8M9pkCffeh729LtDPODNJdeJu5yP7fcprI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/sightings",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"sightings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Captured Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzk1Nzg2LCJleHAiOjE3NTEzOTY2ODZ9.IG_cFjHkwhJd6Q-9DFsRmj2mxoKoavuRt6gmm_X8waU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pokemonId\": 25,\r\n  \"region\": \"Kanto\",\r\n  \"level\": 12,\r\n  \"nickname\": \"Pikachu da Lê\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/captured",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"captured"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Captured Pokémon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzExMjI5LCJleHAiOjE3NTEzMTIxMjl9.TVRtoLwx15WreA4OUs8z2qTA0FZ4MfdFF7V4ml05ztQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pokemonId\": 11,\r\n  \"nickname\": \"Pokemon atualizado\",\r\n  \"region\": \"Kalos\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/captured/19",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"captured",
+								"19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Captured Pokémon",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzk1Nzg2LCJleHAiOjE3NTEzOTY2ODZ9.IG_cFjHkwhJd6Q-9DFsRmj2mxoKoavuRt6gmm_X8waU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/captured",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"captured"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUwMzU2NTg1LCJleHAiOjE3NTAzNTc0ODV9.1z-iWRUNcOJrXK7vE3jnUXwemUK0lbslqJCvJGwqHAk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/auth/logout",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pokémon Details by ID (PokéAPI)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzg3MTY4LCJleHAiOjE3NTEzODgwNjh9.uCeJ5RuvtEBYmSl86rJwMqVa_d_TrDuH1ZxXKGEQdCM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/pokemons/1",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"pokemons",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Captured Pokémon Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzk1Nzg2LCJleHAiOjE3NTEzOTY2ODZ9.IG_cFjHkwhJd6Q-9DFsRmj2mxoKoavuRt6gmm_X8waU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Proxy-Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://back-nest-pokemon-project.onrender.com/captured/28",
+							"protocol": "https",
+							"host": [
+								"back-nest-pokemon-project",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"captured",
+								"28"
 							]
 						}
 					},
