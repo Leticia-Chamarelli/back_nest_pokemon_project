@@ -1,8 +1,23 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { SightedService } from './sighted.service';
 import { CreateSightingDto } from './dto/create-sighting.dto';
+import { UpdateSightingDto } from './dto/update-sighting.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('Sightings')
 @ApiBearerAuth()
@@ -17,7 +32,13 @@ export class SightedController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   registerSighting(@Body() dto: CreateSightingDto, @Request() req) {
     const userId = req.user.id;
-    return this.sightedService.registerSighting(dto.pokemonId, dto.region, userId);
+    return this.sightedService.registerSighting(
+      dto.pokemonId,
+      dto.region,
+      userId,
+      dto.level,
+      dto.nickname,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -28,5 +49,19 @@ export class SightedController {
   getSightings(@Request() req) {
     const userId = req.user.id;
     return this.sightedService.findAllByUser(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a Pokémon sighting' })
+  @ApiResponse({ status: 200, description: 'Pokémon sighting updated successfully' })
+  @ApiResponse({ status: 404, description: 'Sighting not found' })
+  updateSighting(
+    @Param('id') id: string,
+    @Body() dto: UpdateSightingDto,
+    @Request() req,
+  ) {
+    const userId = req.user.id;
+    return this.sightedService.updateSighting(+id, userId, dto);
   }
 }
