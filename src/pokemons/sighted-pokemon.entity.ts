@@ -18,9 +18,18 @@ export class SightedPokemon {
   @Column()
   region: string;
 
-  @ManyToOne(() => User, (user) => user.sightedPokemon)
-  user: User;
+  @Column({ nullable: true })
+  regionImage: string;
+
+  @Column({ nullable: true })
+  level: number;
+
+  @Column({ nullable: true })
+  nickname: string;
 
   @CreateDateColumn()
   sightedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.sightedPokemons, { eager: false })
+  user: User;
 }
