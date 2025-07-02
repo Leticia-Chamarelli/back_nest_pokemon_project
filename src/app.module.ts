@@ -16,7 +16,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public'), // <-- aqui a mudança
+      rootPath: join(process.cwd(), 'public'),
+      exclude: ['/sightings*', '/captured*', '/pokemons*', '/auth*', '/users*'], 
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({

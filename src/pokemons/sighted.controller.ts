@@ -52,6 +52,17 @@ export class SightedController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a specific Pokémon sighting by id' })
+  @ApiResponse({ status: 200, description: 'Sighting found' })
+  @ApiResponse({ status: 404, description: 'Sighting not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getSightingById(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    return this.sightedService.findOneByIdAndUser(+id, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @ApiOperation({ summary: 'Update a Pokémon sighting' })
   @ApiResponse({ status: 200, description: 'Pokémon sighting updated successfully' })
