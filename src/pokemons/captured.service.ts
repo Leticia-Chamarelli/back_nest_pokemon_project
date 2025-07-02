@@ -30,6 +30,8 @@ export class CapturedService {
       Kalos: '/images/regions/kalos.png',
       Alola: '/images/regions/alola.png',
       Galar: '/images/regions/galar.png',
+      Hisui: '/images/regions/hisui.png',
+      Paldea: '/images/regions/paldea.png',
     };
 
     const newCapture = this.capturedRepo.create({

@@ -29,6 +29,8 @@ export class SightedService {
       Kalos: '/images/regions/kalos.png',
       Alola: '/images/regions/alola.png',
       Galar: '/images/regions/galar.png',
+      Hisui: '/images/regions/hisui.png',
+      Paldea: '/images/regions/paldea.png',
     };
 
     const newSighting = this.sightedRepo.create({
@@ -60,9 +62,7 @@ export class SightedService {
       throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
     }
 
-    const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(
-      sighting.pokemonId,
-    );
+    const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(sighting.pokemonId);
 
     return {
       ...sighting,
@@ -71,11 +71,7 @@ export class SightedService {
     };
   }
 
-  async updateSighting(
-    id: number,
-    userId: number,
-    updateDto: UpdateSightingDto,
-  ) {
+  async updateSighting(id: number, userId: number, updateDto: UpdateSightingDto) {
     const sighting = await this.sightedRepo.findOne({
       where: { id, user: { id: userId } },
     });
@@ -85,8 +81,7 @@ export class SightedService {
     }
 
     if (updateDto.level !== undefined) sighting.level = updateDto.level;
-    if (updateDto.nickname !== undefined)
-      sighting.nickname = updateDto.nickname;
+    if (updateDto.nickname !== undefined) sighting.nickname = updateDto.nickname;
 
     if (updateDto.region !== undefined) {
       sighting.region = updateDto.region;
@@ -102,22 +97,9 @@ export class SightedService {
         Galar: '/images/regions/galar.png',
       };
 
-      sighting.regionImage =
-        regionImageMap[updateDto.region] || '/images/regions/default.png';
+      sighting.regionImage = regionImageMap[updateDto.region] || '/images/regions/default.png';
     }
 
     return this.sightedRepo.save(sighting);
-  }
-
-  async deleteSighting(id: number, userId: number) {
-    const sighting = await this.sightedRepo.findOne({
-      where: { id, user: { id: userId } },
-    });
-
-    if (!sighting) {
-      throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
-    }
-
-    return this.sightedRepo.remove(sighting);
   }
 }
