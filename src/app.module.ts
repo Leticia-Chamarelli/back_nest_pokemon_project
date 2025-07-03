@@ -17,9 +17,12 @@ const isProduction = process.env.NODE_ENV === 'production';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
-      exclude: ['/sightings*', '/captured*', '/pokemons*', '/auth*', '/users*'], 
+      exclude: ['/sightings*', '/captured*', '/pokemons*', '/auth*', '/users*'],
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}` || '.env',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
