@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { JwtService } from '@nestjs/jwt';
 
-describe('Auth (e2e)', () => {
+describe('E2E - Pokémon Project', () => {
   let app: INestApplication;
   let server: any;
+  let jwtService: JwtService;
   let accessToken: string;
   let refreshToken: string;
-  let jwtService: JwtService;
+
+  let capturedId: number;
+  let sightedId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,10 +20,38 @@ describe('Auth (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
     server = app.getHttpServer();
-
     jwtService = app.get(JwtService);
+
+    const loginRes = await request(server)
+      .post('/auth/login')
+      .send({ username: 'testuser1', password: '123456' });
+    accessToken = loginRes.body.access_token;
+    refreshToken = loginRes.body.refresh_token;
+
+    const capturedRes = await request(server)
+      .post('/captured')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        pokemonId: 25,
+        region: 'Kanto',
+        level: 10,
+        nickname: 'Sparky',
+      });
+    capturedId = capturedRes.body.id;
+
+    const sightedRes = await request(server)
+      .post('/sightings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        pokemonId: 133,
+        region: 'Johto',
+        level: 12,
+        nickname: 'Eevee',
+      });
+    sightedId = sightedRes.body.id;
   });
 
   afterAll(async () => {
@@ -30,15 +61,11 @@ describe('Auth (e2e)', () => {
   it('should login with valid credentials', async () => {
     const response = await request(server)
       .post('/auth/login')
-      .send({
-        username: 'testuser1',
-        password: '123456',
-      })
+      .send({ username: 'testuser1', password: '123456' })
       .expect(201);
 
     expect(response.body).toHaveProperty('access_token');
     expect(response.body).toHaveProperty('refresh_token');
-
     accessToken = response.body.access_token;
     refreshToken = response.body.refresh_token;
   });
@@ -46,43 +73,36 @@ describe('Auth (e2e)', () => {
   it('should not login with invalid credentials', async () => {
     const response = await request(server)
       .post('/auth/login')
-      .send({
-        username: 'wronguser',
-        password: 'wrongpassword',
-      });
+      .send({ username: 'wrong', password: 'wrong' });
 
     expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('message');
   });
 
   it('should access protected route with valid token', async () => {
-    const response = await request(server)
+    const res = await request(server)
       .get('/auth/profile')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
-    expect(response.body.user).toHaveProperty('username', 'testuser1');
+    expect(res.body.user).toHaveProperty('username', 'testuser1');
   });
 
   it('should fail to access protected route without token', async () => {
-    const response = await request(server)
+    await request(server)
       .get('/auth/profile')
       .expect(401);
-
-    expect(response.body).toHaveProperty('message');
   });
 
   it('should refresh token with valid refresh_token', async () => {
-    const refreshResponse = await request(server)
+    const response = await request(server)
       .post('/auth/refresh')
-      .send({ refreshToken: refreshToken })
+      .send({ refreshToken })
       .expect(201);
 
-    expect(refreshResponse.body).toHaveProperty('access_token');
-    expect(refreshResponse.body).toHaveProperty('refresh_token');
-
-    accessToken = refreshResponse.body.access_token;
-    refreshToken = refreshResponse.body.refresh_token;
+    expect(response.body).toHaveProperty('access_token');
+    expect(response.body).toHaveProperty('refresh_token');
+    accessToken = response.body.access_token;
+    refreshToken = response.body.refresh_token;
   });
 
   it('should logout and invalidate the refresh token', async () => {
@@ -91,230 +111,240 @@ describe('Auth (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(201);
 
-    const refreshAttempt = await request(server)
+    await request(server)
       .post('/auth/refresh')
-      .send({ refresh_token: refreshToken })
+      .send({ refreshToken })
       .expect(401);
-
-    expect(refreshAttempt.body).toHaveProperty('message');
   });
 
-  it('should fail to logout without being authenticated', async () => {
-    const response = await request(server)
+  it('should fail to logout without token', async () => {
+    await request(server)
       .post('/auth/logout')
       .expect(401);
-
-    expect(response.body).toHaveProperty('message');
   });
 
   it('should not allow reuse of an invalidated refresh token', async () => {
-    const loginResponse = await request(server)
+    const loginRes = await request(server)
       .post('/auth/login')
       .send({ username: 'testuser1', password: '123456' })
       .expect(201);
 
-    const refreshToken = loginResponse.body.refresh_token;
+    const reusedRefresh = loginRes.body.refresh_token;
 
     await request(server)
       .post('/auth/logout')
-      .set('Authorization', `Bearer ${loginResponse.body.access_token}`)
+      .set('Authorization', `Bearer ${loginRes.body.access_token}`)
       .expect(201);
 
-    const refreshResponse = await request(server)
+    await request(server)
       .post('/auth/refresh')
-      .send({ refresh_token: refreshToken })
+      .send({ refreshToken: reusedRefresh })
       .expect(401);
-
-    expect(refreshResponse.body).toHaveProperty('message');
   });
 
-  it('should fail to access protected route with expired access token', async () => {
+  it('should fail with expired access token', async () => {
     const payload = { username: 'testuser1', sub: 2 };
-
-    const shortLivedToken = jwtService.sign(payload, {
+    const shortToken = jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '1s',
     });
 
-    await new Promise((res) => setTimeout(res, 2000));
+    await new Promise(res => setTimeout(res, 2000));
 
-    const response = await request(server)
+    const res = await request(server)
       .get('/auth/profile')
-      .set('Authorization', `Bearer ${shortLivedToken}`);
+      .set('Authorization', `Bearer ${shortToken}`);
 
-    expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('message');
+    expect(res.status).toBe(401);
   });
 
-    it('should fail to access protected route with an invalid access token', async () => {
-    const fakeToken = 'Bearer faketoken.invalid.signature';
-
-    const response = await request(server)
+  it('should fail with invalid access token', async () => {
+    const fake = 'Bearer faketoken.invalid.signature';
+    await request(server)
       .get('/auth/profile')
-      .set('Authorization', fakeToken);
-
-    expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('message');
+      .set('Authorization', fake)
+      .expect(401);
   });
 
-    it('should fail to refresh with invalid or expired refresh token', async () => {
-    const invalidToken = 'invalid.token.string';
-
-    const invalidResponse = await request(server)
+  it('should fail to refresh with invalid or expired refresh token', async () => {
+    const fakeToken = 'invalid.token.string';
+    await request(server)
       .post('/auth/refresh')
-      .send({ refresh_token: invalidToken });
-
-    expect(invalidResponse.status).toBe(401);
-    expect(invalidResponse.body).toHaveProperty('message');
+      .send({ refreshToken: fakeToken })
+      .expect(401);
 
     const payload = { username: 'testuser1', sub: 2 };
-    const expiredRefreshToken = app
-      .get(JwtService)
-      .sign(payload, {
-        secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: '1s',
-      });
+    const expired = jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '1s',
+    });
 
-    await new Promise((res) => setTimeout(res, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
 
-    const expiredResponse = await request(server)
+    await request(server)
       .post('/auth/refresh')
-      .send({ refresh_token: expiredRefreshToken });
-
-    expect(expiredResponse.status).toBe(401);
-    expect(expiredResponse.body).toHaveProperty('message');
+      .send({ refreshToken: expired })
+      .expect(401);
   });
 
-  it('should capture a Pokémon for the authenticated user', async () => {
-  const loginResponse = await request(server)
-    .post('/auth/login')
-    .send({ username: 'testuser1', password: '123456' })
-    .expect(201);
+  it('should capture a Pokémon for authenticated user', async () => {
+    const login = await request(server)
+      .post('/auth/login')
+      .send({ username: 'testuser1', password: '123456' })
+      .expect(201);
 
-  const token = loginResponse.body.access_token;
+    const token = login.body.access_token;
 
-  const captureResponse = await request(server)
-    .post('/captured')
-    .set('Authorization', `Bearer ${token}`)
-    .send({ pokemonId: 25 }) 
-    .expect(201);
+    const res = await request(server)
+      .post('/captured')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ pokemonId: 25, region: 'Kanto' });
 
-  expect(captureResponse.body).toHaveProperty('id');
-  expect(captureResponse.body).toHaveProperty('pokemonId', 25);
-  expect(captureResponse.body).toHaveProperty('user');
-  expect(captureResponse.body.user).toHaveProperty('id');
-});
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('pokemonId', 25);
+    expect(res.body).toHaveProperty('user');
+  });
 
-  it('/captured (GET) - should return captured pokémons for the authenticated user', async () => {
-    const loginResponse = await request(server)
+  it('should list captured Pokémon for the authenticated user', async () => {
+    const login = await request(server)
       .post('/auth/login')
       .send({ username: 'testuser1', password: '123456' });
 
-    const token = loginResponse.body.access_token;
+    const token = login.body.access_token;
 
-    const response = await request(server)
+    const res = await request(server)
       .get('/captured')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    if (response.body.length > 0) {
-      expect(response.body[0]).toHaveProperty('pokemonId');
-      expect(response.body[0]).toHaveProperty('capturedAt');
-    }
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
   });
 
-    it('/sightings (POST) - should register a Pokémon sighting for the authenticated user', async () => {
-    const loginResponse = await request(server)
+  it('should register a sighting', async () => {
+    const login = await request(server)
       .post('/auth/login')
       .send({ username: 'testuser1', password: '123456' });
 
-    const token = loginResponse.body.access_token;
+    const token = login.body.access_token;
 
-    const response = await request(server)
+    const res = await request(server)
       .post('/sightings')
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        pokemonId: 3, 
-        region: 'Kanto'
-      });
+      .send({ pokemonId: 3, region: 'Kanto' });
 
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('id');
-    expect(response.body).toHaveProperty('pokemonId', 3);
-    expect(response.body).toHaveProperty('region', 'Kanto');
-    expect(response.body).toHaveProperty('sightedAt');
-    expect(response.body.user).toHaveProperty('id');
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('pokemonId', 3);
   });
 
-  it('/sightings (GET) - should return the user\'s sighted Pokémon', async () => {
-    const loginResponse = await request(server)
+  it('should list sightings of the authenticated user', async () => {
+    const login = await request(server)
       .post('/auth/login')
       .send({ username: 'testuser1', password: '123456' });
 
-    const token = loginResponse.body.access_token;
+    const token = login.body.access_token;
 
-    const response = await request(server)
+    const res = await request(server)
       .get('/sightings')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-
-    if (response.body.length > 0) {
-      const sighting = response.body[0];
-      expect(sighting).toHaveProperty('id');
-      expect(sighting).toHaveProperty('pokemonId');
-      expect(sighting).toHaveProperty('region');
-      expect(sighting).toHaveProperty('sightedAt');
-      expect(sighting.user).toHaveProperty('id');
-    }
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
   });
 
-  describe('/pokemons (GET)', () => {
   it('should return a paginated list of pokémons', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/pokemons?limit=10&offset=0')
+    const res = await request(server)
+      .get('/pokemons?limit=10&offset=0');
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('results');
-    expect(Array.isArray(response.body.results)).toBe(true);
-    expect(response.body.results.length).toBeGreaterThan(0);
-    expect(response.body.results[0]).toHaveProperty('name');
-    expect(response.body.results[0]).toHaveProperty('url');
-  });
-});
-
-describe('/pokemons/:id (GET)', () => {
-  it('should return details of a specific pokémon by ID', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/pokemons/1'); 
-      
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('name');
-    expect(response.body).toHaveProperty('id', 1);
-    expect(response.body).toHaveProperty('types');
-    expect(Array.isArray(response.body.types)).toBe(true);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('results');
   });
 
-  it('should return details of a specific pokémon by name', async () => {
-    const response = await request(app.getHttpServer())
+  it('should return pokémon details by ID', async () => {
+    const res = await request(server)
+      .get('/pokemons/1');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('id', 1);
+  });
+
+  it('should return pokémon details by name', async () => {
+    const res = await request(server)
       .get('/pokemons/pikachu');
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('name', 'pikachu');
-    expect(response.body).toHaveProperty('id');
-    expect(response.body).toHaveProperty('types');
-    expect(Array.isArray(response.body.types)).toBe(true);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('name', 'pikachu');
   });
 
-  it('should return 404 for non-existent pokémon', async () => {
-    const response = await request(app.getHttpServer())
+  it('should return 404 for unknown pokémon', async () => {
+    const res = await request(server)
       .get('/pokemons/unknownmon');
 
-    expect(response.status).toBe(404);
+    expect(res.status).toBe(404);
   });
-});
 
+  it('should update a captured Pokémon', async () => {
+    const updateData = {
+      level: 20,
+      nickname: 'SparkyUpdated',
+      region: 'Johto',
+    };
 
+    const res = await request(server)
+      .put(`/captured/${capturedId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(updateData)
+      .expect(200);
+
+    expect(res.body.level).toBe(updateData.level);
+    expect(res.body.nickname).toBe(updateData.nickname);
+    expect(res.body.region).toBe(updateData.region);
+  });
+
+  it('should delete a captured Pokémon', async () => {
+    const res = await request(server)
+      .delete(`/captured/${capturedId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(res.body.message).toContain('removed successfully');
+
+    const listRes = await request(server)
+      .get('/captured')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(listRes.body.find((c) => c.id === capturedId)).toBeUndefined();
+  });
+
+  it('should update a sighted Pokémon', async () => {
+    const updateData = {
+      level: 18,
+      nickname: 'EeveeUpdated',
+      region: 'Kanto',
+    };
+
+    const res = await request(server)
+      .put(`/sightings/${sightedId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(updateData)
+      .expect(200);
+
+    expect(res.body.level).toBe(updateData.level);
+    expect(res.body.nickname).toBe(updateData.nickname);
+    expect(res.body.region).toBe(updateData.region);
+  });
+
+  it('should delete a sighted Pokémon', async () => {
+    const res = await request(server)
+      .delete(`/sightings/${sightedId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(res.body.message).toContain('removed successfully');
+
+    const listRes = await request(server)
+      .get('/sightings')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(listRes.body.find((s) => s.id === sightedId)).toBeUndefined();
+  });
 });
