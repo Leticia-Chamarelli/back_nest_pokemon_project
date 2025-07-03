@@ -13,8 +13,8 @@ describe('App E2E Tests', () => {
   let accessToken: string;
 
   const testUser = {
-    username: 'e2e_user',
-    password: 'e2e_password',
+    username: 'testuser1',
+    password: '123456',
   };
 
   beforeAll(async () => {
@@ -35,7 +35,16 @@ describe('App E2E Tests', () => {
 
   describe('Auth', () => {
     beforeEach(async () => {
-      await dataSource.getRepository(User).delete({});
+      const queryRunner = dataSource.createQueryRunner();
+      await queryRunner.connect();
+
+      await queryRunner.query('SET session_replication_role = replica;'); // Disable FK checks
+      await queryRunner.query('TRUNCATE TABLE "captured_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "sighted_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "user" CASCADE;');
+      await queryRunner.query('SET session_replication_role = DEFAULT;'); // Re-enable FK checks
+
+      await queryRunner.release();
     });
 
     it('POST /auth/register - should register a new user successfully', () => {
@@ -70,7 +79,7 @@ describe('App E2E Tests', () => {
         });
     });
 
-     it('GET /auth/profile - should return the user profile if token is valid', async () => {
+    it('GET /auth/profile - should return the user profile if token is valid', async () => {
       await request(app.getHttpServer()).post('/auth/register').send(testUser);
       const loginRes = await request(app.getHttpServer()).post('/auth/login').send(testUser);
       const token = loginRes.body.access_token;
@@ -87,12 +96,18 @@ describe('App E2E Tests', () => {
 
   describe('Pokemon (Captured & Sighted)', () => {
     beforeEach(async () => {
-      await dataSource.getRepository(CapturedPokemon).delete({});
-      await dataSource.getRepository(SightedPokemon).delete({});
-      await dataSource.getRepository(User).delete({});
+      const queryRunner = dataSource.createQueryRunner();
+      await queryRunner.connect();
+
+      await queryRunner.query('SET session_replication_role = replica;');
+      await queryRunner.query('TRUNCATE TABLE "captured_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "sighted_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "user" CASCADE;');
+      await queryRunner.query('SET session_replication_role = DEFAULT;');
+
+      await queryRunner.release();
 
       await request(app.getHttpServer()).post('/auth/register').send(testUser);
-
       const loginResponse = await request(app.getHttpServer()).post('/auth/login').send(testUser);
       accessToken = loginResponse.body.access_token;
     });
@@ -126,13 +141,13 @@ describe('App E2E Tests', () => {
           expect(res.body[0].pokemonId).toEqual(1);
         });
     });
-    
+
     it('DELETE /captured/:id - should release a captured pokemon', async () => {
       const postRes = await request(app.getHttpServer())
         .post('/captured')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({ pokemonId: 149, region: 'Kanto', nickname: 'Dragon' });
-      
+
       const capturedId = postRes.body.id;
 
       return request(app.getHttpServer())
@@ -142,32 +157,32 @@ describe('App E2E Tests', () => {
     });
 
     it('POST /sightings - should register a pokemon sighting', () => {
-        const sightingDto = { pokemonId: 147, region: 'Johto' };
-        return request(app.getHttpServer())
-          .post('/sightings')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send(sightingDto)
-          .expect(201)
-          .then((res) => {
-            expect(res.body.pokemonId).toEqual(sightingDto.pokemonId);
-          });
-      });
+      const sightingDto = { pokemonId: 147, region: 'Johto' };
+      return request(app.getHttpServer())
+        .post('/sightings')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(sightingDto)
+        .expect(201)
+        .then((res) => {
+          expect(res.body.pokemonId).toEqual(sightingDto.pokemonId);
+        });
+    });
 
-      it('GET /sightings - should list all sightings for the user', async () => {
-        await request(app.getHttpServer())
-          .post('/sightings')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({ pokemonId: 132, region: 'Kanto' });
-  
-        return request(app.getHttpServer())
-          .get('/sightings')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .expect(200)
-          .then((res) => {
-            expect(Array.isArray(res.body)).toBe(true);
-            expect(res.body.length).toBe(1);
-            expect(res.body[0].pokemonId).toEqual(132);
-          });
-      });
+    it('GET /sightings - should list all sightings for the user', async () => {
+      await request(app.getHttpServer())
+        .post('/sightings')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 132, region: 'Kanto' });
+
+      return request(app.getHttpServer())
+        .get('/sightings')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true);
+          expect(res.body.length).toBe(1);
+          expect(res.body[0].pokemonId).toEqual(132);
+        });
+    });
   });
 });

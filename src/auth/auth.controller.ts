@@ -7,7 +7,7 @@ import {
   Get,
   Req,
   ConflictException,
-  BadRequestException,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -84,6 +84,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200) // <-- Essa linha garante status 200 OK no login
   @ApiOperation({ summary: 'Login and receive tokens' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
