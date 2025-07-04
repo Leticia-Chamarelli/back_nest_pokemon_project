@@ -128,6 +128,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Refresh access token using refresh token' })
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({
@@ -188,6 +189,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @HttpCode(200)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout user (protected)' })
   @ApiResponse({

@@ -92,6 +92,131 @@ describe('App E2E Tests', () => {
           expect(res.body.user.username).toEqual(testUser.username);
         });
     });
+
+
+    it('POST /auth/login - should login a registered user and return tokens', async () => {
+      await request(app.getHttpServer()).post('/auth/register').send(testUser);
+
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send(testUser)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('access_token');
+          expect(res.body.user.username).toEqual(testUser.username);
+        });
+    });
+
+    it('GET /auth/profile - should return the user profile if token is valid', async () => {
+      await request(app.getHttpServer()).post('/auth/register').send(testUser);
+      const loginRes = await request(app.getHttpServer()).post('/auth/login').send(testUser);
+      const token = loginRes.body.access_token;
+
+      return request(app.getHttpServer())
+        .get('/auth/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.user.username).toEqual(testUser.username);
+        });
+    });
+
+    it('POST /auth/logout - should logout and invalidate the refresh token', async () => {
+      await request(app.getHttpServer()).post('/auth/register').send(testUser);
+      const loginRes = await request(app.getHttpServer()).post('/auth/login').send(testUser);
+      const token = loginRes.body.access_token;
+
+      return request(app.getHttpServer())
+        .post('/auth/logout')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.message).toEqual('Logout successful');
+        });
+    });
+
+        describe('POST /auth/logout - missing or invalid token', () => {
+      it('should fail if token is missing', async () => {
+        return request(app.getHttpServer())
+          .post('/auth/logout')
+          .expect(401)
+          .expect((res) => {
+            expect(res.body.message).toEqual('Unauthorized');
+          });
+      });
+
+      it('should fail if token is invalid', async () => {
+        return request(app.getHttpServer())
+          .post('/auth/logout')
+          .set('Authorization', 'Bearer invalidtoken123')
+          .expect(401)
+          .expect((res) => {
+            expect(res.body.message).toEqual('Unauthorized');
+          });
+      });
+    });
+
+    it('POST /auth/refresh - should generate new tokens with valid refresh token', async () => {
+  await request(app.getHttpServer()).post('/auth/register').send(testUser);
+  const loginRes = await request(app.getHttpServer()).post('/auth/login').send(testUser);
+  
+  const refreshToken = loginRes.body.refresh_token;
+  
+  return request(app.getHttpServer())
+    .post('/auth/refresh')
+    .send({ refreshToken })
+    .expect(200)
+    .expect((res) => {
+      expect(res.body).toHaveProperty('access_token');
+      expect(res.body).toHaveProperty('refresh_token');
+      expect(typeof res.body.access_token).toBe('string');
+      expect(typeof res.body.refresh_token).toBe('string');
+    });
+});
+
+it('POST /auth/refresh - should fail with invalid refresh token', async () => {
+  const invalidRefreshToken = 'this.is.an.invalid.token';
+
+  return request(app.getHttpServer())
+    .post('/auth/refresh')
+    .send({ refreshToken: invalidRefreshToken })
+    .expect(401)
+    .expect((res) => {
+      expect(res.body.message).toEqual('Invalid or expired refresh token');
+    });
+});
+
+it('POST /auth/login - should fail with invalid credentials', async () => {
+  await request(app.getHttpServer()).post('/auth/register').send(testUser);
+
+  return request(app.getHttpServer())
+    .post('/auth/login')
+    .send({ username: testUser.username, password: 'wrongpassword' })
+    .expect(401)
+    .expect((res) => {
+      expect(res.body.message).toEqual('Invalid credentials');
+    });
+});
+
+it('GET /auth/profile - should fail without access token', async () => {
+  return request(app.getHttpServer())
+    .get('/auth/profile')
+    .expect(401)
+    .expect((res) => {
+      expect(res.body.message).toEqual('Unauthorized');
+    });
+});
+
+it('GET /auth/profile - should fail with invalid token', async () => {
+  return request(app.getHttpServer())
+    .get('/auth/profile')
+    .set('Authorization', 'Bearer invalid.token.here')
+    .expect(401)
+    .expect((res) => {
+      expect(res.body.message).toEqual('Unauthorized');
+    });
+});
+
   });
 
   describe('Pokemon (Captured & Sighted)', () => {
