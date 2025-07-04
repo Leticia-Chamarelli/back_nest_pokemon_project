@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SightedPokemon } from './sighted-pokemon.entity';
@@ -77,7 +77,7 @@ export class SightedService {
     });
 
     if (!sighting) {
-      throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
+      throw new ForbiddenException('Access to this sighting is forbidden');
     }
 
     if (updateDto.level !== undefined) sighting.level = updateDto.level;
@@ -101,5 +101,18 @@ export class SightedService {
     }
 
     return this.sightedRepo.save(sighting);
+  }
+
+  async removeSighting(id: number, userId: number) {
+    const sighting = await this.sightedRepo.findOne({
+      where: { id, user: { id: userId } },
+    });
+
+    if (!sighting) {
+      throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
+    }
+
+    await this.sightedRepo.remove(sighting);
+    return { message: `Sighted Pokémon with id ${id} removed successfully.` };
   }
 }

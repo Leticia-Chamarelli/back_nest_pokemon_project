@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Delete,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -65,5 +66,14 @@ export class SightedController {
   ) {
     const userId = req.user.id;
     return this.sightedService.updateSighting(+id, userId, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a Pokémon sighting' })
+  @ApiResponse({ status: 200, description: 'Pokémon sighting deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Sighting not found' })
+  deleteSighting(@Param('id') id: string, @Request() req: RequestWithUser) {
+    const userId = req.user.id;
+    return this.sightedService.removeSighting(+id, userId);
   }
 }
