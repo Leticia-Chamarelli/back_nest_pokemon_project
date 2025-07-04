@@ -267,6 +267,142 @@ it('GET /auth/profile - should fail with invalid token', async () => {
         });
     });
 
+    it('GET /captured/:id - should return details of a captured pokemon', async () => {
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 4, region: 'Kanto', nickname: 'Charmy' });
+
+      const capturedId = postRes.body.id;
+
+      return request(app.getHttpServer())
+        .get(`/captured/${capturedId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .then((res) => {
+          expect(res.body.id).toEqual(capturedId);
+          expect(res.body.pokemonId).toEqual(4);
+          expect(res.body.nickname).toEqual('Charmy');
+        });
+    });
+
+    it('PUT /captured/:id - should update a captured pokemon', async () => {
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 7, region: 'Kanto', nickname: 'Squirt' });
+
+      const capturedId = postRes.body.id;
+
+      const updateDto = { region: 'Johto', nickname: 'WaterBro' };
+
+      return request(app.getHttpServer())
+        .put(`/captured/${capturedId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(updateDto)
+        .expect(200)
+        .then((res) => {
+          expect(res.body.id).toEqual(capturedId);
+          expect(res.body.region).toEqual(updateDto.region);
+          expect(res.body.nickname).toEqual(updateDto.nickname);
+        });
+    });
+
+it('PUT /captured/:id - should fail if data is invalid', async () => {
+  const postRes = await request(app.getHttpServer())
+    .post('/captured')
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({ pokemonId: 35, region: 'Kanto', nickname: 'Cleffa' });
+
+  const id = postRes.body.id;
+
+  return request(app.getHttpServer())
+    .put(`/captured/${id}`)
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({
+      level: -1,               
+      nickname: 1234567890123456789012345678901234567890 
+    })
+    .expect(400)
+    .expect((res) => {
+      expect(res.body.message).toContain('level must not be less than 1');
+      expect(res.body.message).toContain('nickname must be a string');
+      expect(res.body.message).toContain('nickname must be shorter than or equal to 30 characters');
+    });
+});
+
+
+
+    it('GET /captured/:id - should fail if the pokemon does not belong to the user', async () => {
+      const userA = { username: 'userA', password: '123456' };
+      await request(app.getHttpServer()).post('/auth/register').send(userA);
+      const loginA = await request(app.getHttpServer()).post('/auth/login').send(userA);
+      const tokenA = loginA.body.access_token;
+
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${tokenA}`)
+        .send({ pokemonId: 10, region: 'Kanto', nickname: 'Cater' });
+
+      const capturedId = postRes.body.id;
+
+      const userB = { username: 'userB', password: '123456' };
+      await request(app.getHttpServer()).post('/auth/register').send(userB);
+      const loginB = await request(app.getHttpServer()).post('/auth/login').send(userB);
+      const tokenB = loginB.body.access_token;
+
+      return request(app.getHttpServer())
+        .get(`/captured/${capturedId}`)
+        .set('Authorization', `Bearer ${tokenB}`)
+        .expect(403)
+        .expect((res) => {
+          expect(res.body.message).toBe('Access to this Pokémon is forbidden');
+        });
+    });
+
+it('PUT /captured/:id - should fail if the captured pokemon does not belong to the user', async () => {
+  const userA = { username: 'userA', password: '123456' };
+  await request(app.getHttpServer()).post('/auth/register').send(userA);
+  const loginResA = await request(app.getHttpServer()).post('/auth/login').send(userA);
+  const tokenA = loginResA.body.access_token;
+
+  const captureRes = await request(app.getHttpServer())
+    .post('/captured')
+    .set('Authorization', `Bearer ${tokenA}`)
+    .send({ pokemonId: 10, region: 'Kanto', nickname: 'Buddy' });
+
+  const capturedId = captureRes.body.id;
+  const userB = { username: 'userB', password: 'abcdef' };
+  await request(app.getHttpServer()).post('/auth/register').send(userB);
+  const loginResB = await request(app.getHttpServer()).post('/auth/login').send(userB);
+  const tokenB = loginResB.body.access_token;
+
+  return request(app.getHttpServer())
+    .put(`/captured/${capturedId}`)
+    .set('Authorization', `Bearer ${tokenB}`)
+    .send({ nickname: 'NotMyPokemon' })
+    .expect(403)
+    .expect((res) => {
+      expect(res.body.message).toBe('Access to this Pokémon is forbidden');
+    });
+});
+
+it('POST /captured - should fail if required fields are missing', async () => {
+  return request(app.getHttpServer())
+    .post('/captured')
+    .set('Authorization', `Bearer ${accessToken}`)
+    .send({})
+    .expect(400)
+    .expect((res) => {
+      expect(res.body.message).toContain('pokemonId must be an integer number');
+      expect(res.body.message).toContain('region must be a string');
+      expect(res.body.message).toContain('region should not be empty');
+    });
+});
+
+
+
+
     it('DELETE /captured/:id - should release a captured pokemon', async () => {
       const postRes = await request(app.getHttpServer())
         .post('/captured')

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CapturedPokemon } from './captured-pokemon.entity';
 import { Repository } from 'typeorm';
@@ -56,11 +56,16 @@ export class CapturedService {
 
   async findOneByIdAndUser(id: number, user: User) {
     const capture = await this.capturedRepo.findOne({
-      where: { id, user: { id: user.id } },
+      where: { id },
+      relations: ['user'],
     });
 
     if (!capture) {
       throw new NotFoundException(`Captured Pokémon with id ${id} not found.`);
+    }
+
+    if (capture.user.id !== user.id) {
+      throw new ForbiddenException('Access to this Pokémon is forbidden');
     }
 
     const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(capture.pokemonId);
@@ -74,11 +79,16 @@ export class CapturedService {
 
   async updateCaptured(id: number, user: User, updateDto: UpdateCapturedDto) {
     const capture = await this.capturedRepo.findOne({
-      where: { id, user: { id: user.id } },
+      where: { id },
+      relations: ['user'],
     });
 
     if (!capture) {
       throw new NotFoundException(`Captured Pokémon with id ${id} not found.`);
+    }
+
+    if (capture.user.id !== user.id) {
+      throw new ForbiddenException('Access to this Pokémon is forbidden');
     }
 
     if (updateDto.level !== undefined) capture.level = updateDto.level;
@@ -106,11 +116,16 @@ export class CapturedService {
 
   async removeCaptured(id: number, user: User) {
     const capture = await this.capturedRepo.findOne({
-      where: { id, user: { id: user.id } },
+      where: { id },
+      relations: ['user'],
     });
 
     if (!capture) {
       throw new NotFoundException(`Captured Pokémon with id ${id} not found.`);
+    }
+
+    if (capture.user.id !== user.id) {
+      throw new ForbiddenException('Access to this Pokémon is forbidden');
     }
 
     await this.capturedRepo.remove(capture);
