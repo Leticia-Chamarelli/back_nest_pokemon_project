@@ -324,20 +324,33 @@ describe('App E2E Tests', () => {
 
   it('PUT /captured/:id - should fail if the captured pokemon does not belong to the user', async () => {
     const userA = { username: 'userA', password: '123456' };
-    await request(app.getHttpServer()).post('/auth/register').send(userA);
-    const loginResA = await request(app.getHttpServer()).post('/auth/login').send(userA);
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send(userA);
+
+    const loginResA = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send(userA);
+
     const tokenA = loginResA.body.access_token;
 
     const captureRes = await request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${tokenA}`)
-      .send({ pokemonId: 10, region: 'Kanto', nickname: 'Buddy' });
+    .post('/captured')
+    .set('Authorization', `Bearer ${tokenA}`)
+    .send({ pokemonId: 10, region: 'Kanto', nickname: 'Buddy' });
 
     const capturedId = captureRes.body.id;
 
-    const userB = { username: 'userB', password: 'abcdef' };
-    await request(app.getHttpServer()).post('/auth/register').send(userB);
-    const loginResB = await request(app.getHttpServer()).post('/auth/login').send(userB);
+
+    const userB = { username: 'userC', password: 'abcdef' };
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send(userB);
+
+    const loginResB = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send(userB);
+
     const tokenB = loginResB.body.access_token;
 
     return request(app.getHttpServer())
@@ -349,6 +362,7 @@ describe('App E2E Tests', () => {
         expect(res.body.message).toBe('Access to this Pokémon is forbidden');
       });
   });
+
 
   it('POST /captured - should fail if required fields are missing', async () => {
     return request(app.getHttpServer())
@@ -404,6 +418,13 @@ describe('App E2E Tests', () => {
   });
 
   it('GET /sightings - should list all sightings for the user', async () => {
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.query('SET session_replication_role = replica;');
+    await queryRunner.query('TRUNCATE TABLE "sighted_pokemon" CASCADE;');
+    await queryRunner.query('SET session_replication_role = DEFAULT;');
+    await queryRunner.release();
+
     await request(app.getHttpServer())
       .post('/sightings')
       .set('Authorization', `Bearer ${accessToken}`)
@@ -419,6 +440,7 @@ describe('App E2E Tests', () => {
         expect(res.body[0].pokemonId).toEqual(132);
       });
   });
+
 
   it('PUT /sightings/:id - should update a pokemon sighting', async () => {
     const createRes = await request(app.getHttpServer())
