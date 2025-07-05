@@ -183,117 +183,117 @@ describe('App E2E Tests', () => {
   });
 
   describe('Pokemon (Captured & Sighted)', () => {
-  beforeEach(async () => {
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
+    beforeEach(async () => {
+      const queryRunner = dataSource.createQueryRunner();
+      await queryRunner.connect();
 
-    await queryRunner.query('SET session_replication_role = replica;');
-    await queryRunner.query('TRUNCATE TABLE "captured_pokemon" CASCADE;');
-    await queryRunner.query('TRUNCATE TABLE "sighted_pokemon" CASCADE;');
-    await queryRunner.query('TRUNCATE TABLE "user" CASCADE;');
-    await queryRunner.query('SET session_replication_role = DEFAULT;');
+      await queryRunner.query('SET session_replication_role = replica;');
+      await queryRunner.query('TRUNCATE TABLE "captured_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "sighted_pokemon" CASCADE;');
+      await queryRunner.query('TRUNCATE TABLE "user" CASCADE;');
+      await queryRunner.query('SET session_replication_role = DEFAULT;');
 
-    await queryRunner.release();
+      await queryRunner.release();
 
-    await request(app.getHttpServer()).post('/auth/register').send(testUser);
-    const loginResponse = await request(app.getHttpServer()).post('/auth/login').send(testUser);
-    accessToken = loginResponse.body.access_token;
+      await request(app.getHttpServer()).post('/auth/register').send(testUser);
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send(testUser);
+      accessToken = loginResponse.body.access_token;
+    });
+
+    it('POST /captured - should capture a pokemon for the logged-in user', () => {
+      const captureDto = { pokemonId: 25, region: 'Kanto', nickname: 'Sparky' };
+      return request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(captureDto)
+        .expect(201)
+        .then((res) => {
+          expect(res.body.pokemonId).toEqual(captureDto.pokemonId);
+          expect(res.body.nickname).toEqual(captureDto.nickname);
+        });
+    });
+
+    it('GET /captured - should list captured pokemons for the logged-in user', async () => {
+      await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 1, region: 'Kanto' });
+
+      return request(app.getHttpServer())
+        .get('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true);
+          expect(res.body.length).toBe(1);
+          expect(res.body[0].pokemonId).toEqual(1);
+        });
+    });
+
+    it('GET /captured/:id - should return details of a captured pokemon', async () => {
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 4, region: 'Kanto', nickname: 'Charmy' });
+
+      const capturedId = postRes.body.id;
+
+      return request(app.getHttpServer())
+        .get(`/captured/${capturedId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200)
+        .then((res) => {
+          expect(res.body.id).toEqual(capturedId);
+          expect(res.body.pokemonId).toEqual(4);
+          expect(res.body.nickname).toEqual('Charmy');
+        });
+    });
+
+    it('PUT /captured/:id - should update a captured pokemon', async () => {
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 7, region: 'Kanto', nickname: 'Squirt' });
+
+      const capturedId = postRes.body.id;
+
+      const updateDto = { region: 'Johto', nickname: 'WaterBro' };
+
+      return request(app.getHttpServer())
+        .put(`/captured/${capturedId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(updateDto)
+        .expect(200)
+        .then((res) => {
+          expect(res.body.id).toEqual(capturedId);
+          expect(res.body.region).toEqual(updateDto.region);
+          expect(res.body.nickname).toEqual(updateDto.nickname);
+        });
+    });
+
+    it('PUT /captured/:id - should fail if data is invalid', async () => {
+      const postRes = await request(app.getHttpServer())
+        .post('/captured')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ pokemonId: 35, region: 'Kanto', nickname: 'Cleffa' });
+
+      const id = postRes.body.id;
+
+      return request(app.getHttpServer())
+        .put(`/captured/${id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          level: -1,
+          nickname: 1234567890123456789012345678901234567890,
+        })
+        .expect(400)
+        .expect((res) => {
+          expect(res.body.message).toContain('level must not be less than 1');
+          expect(res.body.message).toContain('nickname must be a string');
+          expect(res.body.message).toContain('nickname must be shorter than or equal to 30 characters');
+        });
+    });
   });
-
-  it('POST /captured - should capture a pokemon for the logged-in user', () => {
-    const captureDto = { pokemonId: 25, region: 'Kanto', nickname: 'Sparky' };
-    return request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send(captureDto)
-      .expect(201)
-      .then((res) => {
-        expect(res.body.pokemonId).toEqual(captureDto.pokemonId);
-        expect(res.body.nickname).toEqual(captureDto.nickname);
-      });
-  });
-
-  it('GET /captured - should list captured pokemons for the logged-in user', async () => {
-    await request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ pokemonId: 1, region: 'Kanto' });
-
-    return request(app.getHttpServer())
-      .get('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(200)
-      .then((res) => {
-        expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBe(1);
-        expect(res.body[0].pokemonId).toEqual(1);
-      });
-  });
-
-  it('GET /captured/:id - should return details of a captured pokemon', async () => {
-    const postRes = await request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ pokemonId: 4, region: 'Kanto', nickname: 'Charmy' });
-
-    const capturedId = postRes.body.id;
-
-    return request(app.getHttpServer())
-      .get(`/captured/${capturedId}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(200)
-      .then((res) => {
-        expect(res.body.id).toEqual(capturedId);
-        expect(res.body.pokemonId).toEqual(4);
-        expect(res.body.nickname).toEqual('Charmy');
-      });
-  });
-
-  it('PUT /captured/:id - should update a captured pokemon', async () => {
-    const postRes = await request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ pokemonId: 7, region: 'Kanto', nickname: 'Squirt' });
-
-    const capturedId = postRes.body.id;
-
-    const updateDto = { region: 'Johto', nickname: 'WaterBro' };
-
-    return request(app.getHttpServer())
-      .put(`/captured/${capturedId}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send(updateDto)
-      .expect(200)
-      .then((res) => {
-        expect(res.body.id).toEqual(capturedId);
-        expect(res.body.region).toEqual(updateDto.region);
-        expect(res.body.nickname).toEqual(updateDto.nickname);
-      });
-  });
-
-  it('PUT /captured/:id - should fail if data is invalid', async () => {
-    const postRes = await request(app.getHttpServer())
-      .post('/captured')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ pokemonId: 35, region: 'Kanto', nickname: 'Cleffa' });
-
-    const id = postRes.body.id;
-
-    return request(app.getHttpServer())
-      .put(`/captured/${id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        level: -1,
-        nickname: 1234567890123456789012345678901234567890,
-      })
-      .expect(400)
-      .expect((res) => {
-        expect(res.body.message).toContain('level must not be less than 1');
-        expect(res.body.message).toContain('nickname must be a string');
-        expect(res.body.message).toContain('nickname must be shorter than or equal to 30 characters');
-      });
-  });
-});
 
   it('GET /captured/:id - should fail if the pokemon does not belong to the user', async () => {
     const userA = { username: 'userA', password: '123456' };
@@ -335,9 +335,9 @@ describe('App E2E Tests', () => {
     const tokenA = loginResA.body.access_token;
 
     const captureRes = await request(app.getHttpServer())
-    .post('/captured')
-    .set('Authorization', `Bearer ${tokenA}`)
-    .send({ pokemonId: 10, region: 'Kanto', nickname: 'Buddy' });
+      .post('/captured')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .send({ pokemonId: 10, region: 'Kanto', nickname: 'Buddy' });
 
     const capturedId = captureRes.body.id;
 
