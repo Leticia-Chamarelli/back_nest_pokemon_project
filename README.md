@@ -114,6 +114,8 @@ Fluxo de testes com supertest, incluindo:
 
 - Listagens com paginação, por nome ou ID
 
+- Atualização e detalhamento de capturas e avistamentos
+
 ```bash
 npm run test:e2e
 ```
@@ -155,10 +157,20 @@ Rotas disponíveis:
 
 - GET /captured – Lista todos os Pokémon capturados do usuário
 
+- GET /captured/:id – Detalha um Pokémon capturado
+
+- PUT /captured/:id – Atualiza apelido ou região do Pokémon capturado 
+
+- DELETE /captured/:id – Libera (deleta) um Pokémon capturado
+
 👀 Avistamentos
 - POST /sighted – Registra um Pokémon avistado
 
 - GET /sighted – Lista todos os Pokémon avistados
+
+- PUT /sighted/:id – Atualiza a região do avistamento
+
+- DELETE /sighted/:id – Remove um registro de avistamento
 
 
 ## 📬 Testes via Postman
@@ -209,6 +221,20 @@ Inclui:
 📁 .vscode
 │   └── settings.json
 │
+📁 public
+│   └── 📁 images
+│       └── 📁 regions
+│           ├── alola.png
+│           ├── galar.png
+│           ├── hisui.png
+│           ├── hoenn.png
+│           ├── johto.png
+│           ├── kalos.png
+│           ├── kanto.png
+│           ├── paldea.png
+│           ├── sinnoh.png
+│           └── unova.png
+│
 📁 src
 │
 ├── 📁 auth
@@ -245,7 +271,11 @@ Inclui:
 │   ├── 📁 dto
 │   │   ├── create-captured.dto.ts
 │   │   ├── create-sighted.dto.ts
-│   │   └── list-pokemon.dto.ts
+│   │   ├── list-pokemon.dto.ts
+│   │   ├── pokemon-detail.dto
+│   │   ├── update-captured.dto
+│   │   └── update-sighting.dto
+│   │ 
 │   ├── captured-pokemon.entity.ts
 │   ├── captured.controller.ts
 │   ├── captured.service.ts
@@ -287,7 +317,8 @@ Inclui:
 ```
 🚫 Ignorados pelo Git:
 ```bash
-- .env
+- .env.development
+- .env.production
 - dist/
 - node_modules/
 ```
