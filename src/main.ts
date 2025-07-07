@@ -19,9 +19,9 @@ async function bootstrap() {
     try {
       await AppDataSource.initialize();
       await AppDataSource.runMigrations();
-      console.log('✅ Migrations executadas com sucesso');
+      console.log('✅ Migrations executed successfully');
     } catch (error) {
-      console.error('❌ Erro ao rodar migrations:', error);
+      console.error('❌ Error running migrations:', error);
     }
   }
 
