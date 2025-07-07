@@ -10,9 +10,20 @@ import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './swagger';
 import { join } from 'path'; 
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { AppDataSource } from '../data-source'; 
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      await AppDataSource.initialize();
+      await AppDataSource.runMigrations();
+      console.log('✅ Migrations executadas com sucesso');
+    } catch (error) {
+      console.error('❌ Erro ao rodar migrations:', error);
+    }
+  }
 
   app.enableCors({
     origin: 'http://localhost:3000',
