@@ -4,7 +4,9 @@ import { User } from './src/users/user.entity';
 import { CapturedPokemon } from './src/pokemons/captured-pokemon.entity';
 import { SightedPokemon } from './src/pokemons/sighted-pokemon.entity';
 
-dotenv.config();
+dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
+});
 
 const isProduction = process.env.NODE_ENV === 'production';
 
