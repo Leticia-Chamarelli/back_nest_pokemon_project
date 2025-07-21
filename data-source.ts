@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   entities: [User, CapturedPokemon, SightedPokemon],
   migrations: [
-    isProduction ? 'dist/migrations/*.js' : 'src/migrations/*.ts',
+    isProduction ? 'dist/src/migrations/*.js' : 'src/migrations/*.ts',
   ],
   synchronize: false,
   ...(isProduction && {
