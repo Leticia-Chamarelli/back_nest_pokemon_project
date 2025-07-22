@@ -1130,12 +1130,12 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6MSwiaWF0IjoxNzUxMzExMjI5LCJleHAiOjE3NTEzMTIxMjl9.TVRtoLwx15WreA4OUs8z2qTA0FZ4MfdFF7V4ml05ztQ",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RldXN1YXJpbyIsInN1YiI6NCwiaWF0IjoxNzUzMjA0MzA4LCJleHAiOjE3NTMyMDUyMDh9.QQUTo_vzEtJxENPaFYQ4y85mWSDyd_DLKx8pozKN4N0",
 									"type": "string"
 								}
 							]
 						},
-						"method": "PATCH",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -1147,7 +1147,7 @@
 							}
 						},
 						"url": {
-							"raw": "https://back-nest-pokemon-project.onrender.com/captured/19",
+							"raw": "https://back-nest-pokemon-project.onrender.com/sightings/1",
 							"protocol": "https",
 							"host": [
 								"back-nest-pokemon-project",
@@ -1155,8 +1155,8 @@
 								"com"
 							],
 							"path": [
-								"captured",
-								"19"
+								"sightings",
+								"1"
 							]
 						}
 					},
