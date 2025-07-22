@@ -54,20 +54,26 @@ npm install
 
 3. **Configure seu arquivo `.env`**
 
-   Crie um arquivo `.env` com base no arquivo `.env.example`.
+Crie um arquivo `.env` com base no arquivo `.env.example`.
 
 
 4. **Configure o PostgreSQL**
 
-   Use o DBeaver ou outro cliente para:
-   - Criar o banco de dados; e
+Crie o banco de dados no PostgreSQL (pode usar o [DBeaver](https://dbeaver.io/) ou outro cliente).
 
-   - Rodar as migrations para criar as tabelas necessárias (recomendado sempre que houver mudanças no esquema). Para isso, execute:
+Em seguida, rode os seguintes comandos no terminal para garantir que as tabelas serão criadas corretamente a partir das migrations:
 
-   ```bash
-   npm run migration:run
-    ```
+#### Criar uma nova migration (quando houver mudanças no esquema):
+```bash
+npm run typeorm:migration:generate -- -n NomeDaMigration
+ ```
 
+#### Rodar as migrations no banco (criação das tabelas):
+```bash
+npm run typeorm:migration:run
+```
+
+   
 5. **Inicie o projeto**
 ```bash
 npm run start:dev
