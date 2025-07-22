@@ -54,6 +54,15 @@ export class SightedController {
     return this.sightedService.findAllByUser(userId);
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get details of a specific sighted Pokémon' })
+  @ApiResponse({ status: 200, description: 'Sighting details returned successfully' })
+  @ApiResponse({ status: 404, description: 'Sighting not found' })
+  getSightingDetail(@Param('id') id: string, @Request() req: RequestWithUser) {
+    const userId = req.user.id;
+    return this.sightedService.findOneByIdAndUser(+id, userId);
+  }
+
   @Put(':id')
   @ApiOperation({ summary: 'Update a Pokémon sighting' })
   @ApiResponse({ status: 200, description: 'Pokémon sighting updated successfully' })
