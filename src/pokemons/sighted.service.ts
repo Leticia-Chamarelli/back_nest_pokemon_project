@@ -59,16 +59,22 @@ export class SightedService {
     });
 
     if (!sighting) {
-      throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
+      throw new NotFoundException(`Sighted Pokémon with ID ${id} not found.`);
     }
 
-    const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(sighting.pokemonId);
+    console.log(`Found sighting with ID ${id}, fetching Pokémon details for ID: ${sighting.pokemonId}`);
 
-    return {
-      ...sighting,
-      pokemonDetails,
-      regionImage: sighting.regionImage,
-    };
+    try {
+      const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(sighting.pokemonId);
+      return {
+        ...sighting,
+        pokemonDetails,
+        regionImage: sighting.regionImage,
+      };
+    } catch (error) {
+      console.error(`Failed to fetch Pokémon data from PokéAPI for ID ${sighting.pokemonId}`, error);
+      throw new Error('Failed to retrieve Pokémon data. Please try again later.');
+    }
   }
 
   async updateSighting(id: number, userId: number, updateDto: UpdateSightingDto) {
@@ -77,7 +83,7 @@ export class SightedService {
     });
 
     if (!sighting) {
-      throw new ForbiddenException('Access to this sighting is forbidden');
+      throw new ForbiddenException('You are not allowed to update this sighting.');
     }
 
     if (updateDto.level !== undefined) sighting.level = updateDto.level;
@@ -95,6 +101,8 @@ export class SightedService {
         Kalos: '/images/regions/kalos.png',
         Alola: '/images/regions/alola.png',
         Galar: '/images/regions/galar.png',
+        Hisui: '/images/regions/hisui.png',
+        Paldea: '/images/regions/paldea.png',
       };
 
       sighting.regionImage = regionImageMap[updateDto.region] || '/images/regions/default.png';
@@ -109,10 +117,10 @@ export class SightedService {
     });
 
     if (!sighting) {
-      throw new NotFoundException(`Sighted Pokémon with id ${id} not found.`);
+      throw new NotFoundException(`Sighted Pokémon with ID ${id} not found.`);
     }
 
     await this.sightedRepo.remove(sighting);
-    return { message: `Sighted Pokémon with id ${id} removed successfully.` };
+    return { message: `Sighted Pokémon with ID ${id} was removed successfully.` };
   }
 }
