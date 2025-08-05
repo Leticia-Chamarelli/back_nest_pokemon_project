@@ -59,9 +59,13 @@ export class SightedService {
   }
 
   async findOneByIdAndUser(id: number, userId: number) {
+    console.log(`🔵 Searching for sighting with ID=${id} and userID=${userId}...`);
+
     const sighting = await this.sightedRepo.findOne({
       where: { id, user: { id: userId } },
     });
+
+    console.log('🟣 Result from findOne:', sighting);
 
     if (!sighting) {
       console.warn(`⚠️ No sighting found for ID ${id} and user ID ${userId}`);
