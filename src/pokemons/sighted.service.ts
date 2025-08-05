@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SightedPokemon } from './sighted-pokemon.entity';
@@ -59,21 +64,29 @@ export class SightedService {
     });
 
     if (!sighting) {
+      console.warn(`⚠️ No sighting found for ID ${id} and user ID ${userId}`);
       throw new NotFoundException(`Sighted Pokémon with ID ${id} not found.`);
     }
 
-    console.log(`Found sighting with ID ${id}, fetching Pokémon details for ID: ${sighting.pokemonId}`);
+    console.log('🟡 Calling PokéAPI with ID:', sighting.pokemonId);
 
     try {
       const pokemonDetails = await this.pokeapiService.getPokemonByIdOrName(sighting.pokemonId);
+      console.log('🟢 PokéAPI response:', pokemonDetails);
+
       return {
         ...sighting,
         pokemonDetails,
         regionImage: sighting.regionImage,
       };
     } catch (error) {
-      console.error(`Failed to fetch Pokémon data from PokéAPI for ID ${sighting.pokemonId}`, error);
-      throw new Error('Failed to retrieve Pokémon data. Please try again later.');
+      console.error('🔴 PokéAPI error:', {
+        message: error.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+      });
+
+      throw new InternalServerErrorException('Failed to retrieve Pokémon data from PokéAPI.');
     }
   }
 
