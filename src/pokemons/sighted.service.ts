@@ -51,12 +51,20 @@ export class SightedService {
   }
 
   async findAllByUser(userId: number) {
-    return this.sightedRepo.find({
+  try {
+    const results = await this.sightedRepo.find({
       where: { user: { id: userId } },
       relations: ['user'],
       order: { sightedAt: 'DESC' },
     });
+
+    console.log('🔵 Sightings found for user:', results);
+    return results;
+  } catch (error) {
+    console.error('🔴 Error in findAllByUser:', error);
+    throw error;
   }
+}
 
   async findOneByIdAndUser(id: number, userId: number) {
     console.log(`🔵 Searching for sighting with ID=${id} and userID=${userId}...`);
